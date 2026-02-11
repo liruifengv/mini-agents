@@ -1,6 +1,6 @@
-# mini-agent 开发计划
+# mini-agents 开发计划
 
-基于 Python 版本 mini-agent 的功能进行 TypeScript 复刻。
+基于 Python 版本 mini-agents 的功能进行 TypeScript 复刻。
 
 ---
 
@@ -106,24 +106,24 @@
 ## 阶段 4：基础 CLI
 
 ### 4.1 CLI 入口
-- 修改 `mini-agent-cli/src/index.ts`
+- 修改 `mini-agents-cli/src/index.ts`
 - 参数解析、子命令
 - 依赖：`commander`
 
 ### 4.2 交互式提示
-- 新建 `mini-agent-cli/src/prompt.ts`
+- 新建 `mini-agents-cli/src/prompt.ts`
 - 命令历史、补全
 - 依赖：`@inquirer/prompts`
 
 ### 4.3 Session 命令
-- 新建 `mini-agent-cli/src/commands.ts`
+- 新建 `mini-agents-cli/src/commands.ts`
 - `/help`、`/clear`、`/history`、`/stats`、`/exit`
 
 ### 4.4 颜色输出
-- 新建 `mini-agent-cli/src/colors.ts`
+- 新建 `mini-agents-cli/src/colors.ts`
 
 **测试**：
-- 手动测试：`pnpm -F mini-agent-cli dev`
+- 手动测试：`pnpm -F mini-agents-cli dev`
 - 验证所有命令正常工作
 
 ---
@@ -214,15 +214,15 @@
 ## 阶段 10：CLI 高级功能
 
 ### 10.1 Esc 键取消
-- 新建 `mini-agent-cli/src/key-listener.ts`
+- 新建 `mini-agents-cli/src/key-listener.ts`
 - 跨平台键盘监听
 
 ### 10.2 高级交互
-- 修改 `mini-agent-cli/src/prompt.ts`
+- 修改 `mini-agents-cli/src/prompt.ts`
 - 历史建议、自定义快捷键
 
 ### 10.3 系统集成
-- 新建 `mini-agent-cli/src/system.ts`
+- 新建 `mini-agents-cli/src/system.ts`
 - 打开日志目录
 
 **测试**：
@@ -278,17 +278,17 @@
 
 ```bash
 # 阶段 1
-pnpm add -F mini-agent gpt-tokenizer
+pnpm add -F mini-agents gpt-tokenizer
 
 # 阶段 3
-pnpm add -F mini-agent js-yaml
-pnpm add -F mini-agent -D @types/js-yaml
+pnpm add -F mini-agents js-yaml
+pnpm add -F mini-agents -D @types/js-yaml
 
 # 阶段 4
-pnpm add -F mini-agent-cli commander @inquirer/prompts
+pnpm add -F mini-agents-cli commander @inquirer/prompts
 
 # 阶段 8
-pnpm add -F mini-agent gray-matter
+pnpm add -F mini-agents gray-matter
 ```
 
 ---
@@ -306,5 +306,5 @@ pnpm test tests/tools/read-tool.test.ts
 pnpm tsx examples/tools/test-read.ts
 
 # CLI 开发模式
-pnpm -F mini-agent-cli dev
+pnpm -F mini-agents-cli dev
 ```

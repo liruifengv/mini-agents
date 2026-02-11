@@ -1,11 +1,11 @@
-# mini-agent
+# mini-agents
 
 English | [中文](README.md)
 
-**mini-agent** is a minimalist yet professional TypeScript Agent framework, inspired by MiniMax's open-source Python version of [Mini-Agent](https://github.com/MiniMax-AI/Mini-Agent). The project consists of two parts:
+**mini-agents** is a minimalist yet professional TypeScript Agent framework, inspired by MiniMax's open-source Python version of [Mini-Agent](https://github.com/MiniMax-AI/Mini-Agent). The project consists of two parts:
 
-- **mini-agent**: A standalone Agent framework providing LLM clients, tool system, and core Agent logic
-- **mini-agent-cli**: An interactive command-line tool built on top of the framework
+- **mini-agents**: A standalone Agent framework providing LLM clients, tool system, and core Agent logic
+- **mini-agents-cli**: An interactive command-line tool built on top of the framework
 
 ## Features
 
@@ -18,12 +18,12 @@ English | [中文](README.md)
 
 ## Table of Contents
 
-- [mini-agent](#mini-agent)
+- [mini-agents](#mini-agents)
   - [Features](#features)
   - [Project Structure](#project-structure)
   - [Quick Start](#quick-start)
-    - [Using mini-agent-cli](#using-mini-agent-cli)
-    - [Using mini-agent Framework in Your Project](#using-mini-agent-framework-in-your-project)
+    - [Using mini-agents-cli](#using-mini-agents-cli)
+    - [Using mini-agents Framework in Your Project](#using-mini-agents-framework-in-your-project)
   - [Configuration](#configuration)
   - [Tool List](#tool-list)
   - [Development](#development)
@@ -32,9 +32,9 @@ English | [中文](README.md)
 ## Project Structure
 
 ```
-mini-agent/
+mini-agents/
 ├── packages/
-│   ├── mini-agent/           # Framework layer - can be used standalone
+│   ├── mini-agents/           # Framework layer - can be used standalone
 │   │   ├── src/
 │   │   │   ├── tools/        # Tool implementations (read/write/edit/bash/skill)
 │   │   │   ├── llm/          # LLM clients (anthropic/openai)
@@ -43,7 +43,7 @@ mini-agent/
 │   │   │   └── utils/        # Utility functions (token/retry)
 │   │   └── tests/            # Unit tests
 │   │
-│   └── mini-agent-cli/       # CLI layer - interactive application
+│   └── mini-agents-cli/       # CLI layer - interactive application
 │       ├── src/
 │       │   ├── index.ts      # Entry point
 │       │   ├── cli.ts        # CLI implementation
@@ -65,25 +65,25 @@ mini-agent/
 
 ---
 
-### Using mini-agent-cli
+### Using mini-agents-cli
 
-**mini-agent-cli** is an out-of-the-box interactive command-line tool, perfect for directly experiencing Agent functionality.
+**mini-agents-cli** is an out-of-the-box interactive command-line tool, perfect for directly experiencing Agent functionality.
 
 ```bash
 # Global installation
-npm install -g mini-agent-cli
+npm install -g mini-agents-cli
 
 # Or run directly with npx
-npx mini-agent-cli
+npx mini-agents-cli
 ```
 
 **First Run Configuration:**
 
 ```bash
 # Run CLI
-mini-agent-cli
+mini-agents-cli
 
-# The CLI will guide you to select a provider and set API_KEY on first run, and write to the default config file ~/.mini-agent-cli/setting.json
+# The CLI will guide you to select a provider and set API_KEY on first run, and write to the default config file ~/.mini-agents-cli/setting.json
 ```
 
 **CLI Built-in Commands:**
@@ -96,13 +96,13 @@ mini-agent-cli
 
 ---
 
-### Using mini-agent Framework in Your Project
+### Using mini-agents Framework in Your Project
 
-**mini-agent** is a minimalist Agent development framework that can be used independently
+**mini-agents** is a minimalist Agent development framework that can be used independently
 
 ```bash
 # Install framework
-npm install mini-agent
+npm install mini-agents
 
 # Framework depends on Zod for parameter validation
 npm install zod
@@ -111,8 +111,8 @@ npm install zod
 #### 1. Basic Usage
 
 ```typescript
-import { Agent, LLMClient } from 'mini-agent';
-import { createReadTool, createWriteTool, createBashTool } from 'mini-agent/tools';
+import { Agent, LLMClient } from 'mini-agents';
+import { createReadTool, createWriteTool, createBashTool } from 'mini-agents/tools';
 
 // Create LLM client
 const llm = new LLMClient({
@@ -157,7 +157,7 @@ for await (const event of agent.run()) {
 #### 2. Using the Skill System
 
 ```typescript
-import { SkillLoader, createGetSkillTool } from 'mini-agent/tools';
+import { SkillLoader, createGetSkillTool } from 'mini-agents/tools';
 
 // Load Skills
 const skillLoader = new SkillLoader('./skills');
@@ -203,7 +203,7 @@ await runPromise;
 #### 4. Custom Tools
 
 ```typescript
-import { tool } from 'mini-agent';
+import { tool } from 'mini-agents';
 import { z } from 'zod';
 
 // Create custom tools using factory functions
@@ -229,7 +229,7 @@ export function createMyTool(apiKey: string) {
 
 ### CLI Configuration
 
-**Config file path**: `~/.mini-agent-cli/setting.json`
+**Config file path**: `~/.mini-agents-cli/setting.json`
 
 ```json
 {
@@ -254,7 +254,7 @@ export function createMyTool(apiKey: string) {
 
 **Configuration Priority**:
 1. Environment variables (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`)
-2. `~/.mini-agent-cli/setting.json`
+2. `~/.mini-agents-cli/setting.json`
 3. Built-in defaults
 
 ### Framework Configuration
@@ -292,8 +292,8 @@ If you want to contribute to the project or build from source, please refer to t
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/mini-agent.git
-cd mini-agent
+git clone https://github.com/yourusername/mini-agents.git
+cd mini-agents
 
 # Install dependencies
 pnpm install
@@ -306,13 +306,13 @@ pnpm install
 pnpm test
 
 # Run framework tests
-pnpm test packages/mini-agent
+pnpm test packages/mini-agents
 
 # Run CLI tests
-pnpm test packages/mini-agent-cli
+pnpm test packages/mini-agents-cli
 
 # Run specific test file
-pnpm test packages/mini-agent/tests/tools/read-tool.test.ts
+pnpm test packages/mini-agents/tests/tools/read-tool.test.ts
 ```
 
 ### Build
@@ -322,20 +322,20 @@ pnpm test packages/mini-agent/tests/tools/read-tool.test.ts
 pnpm build
 
 # Build framework
-pnpm -F mini-agent build
+pnpm -F mini-agents build
 
 # Build CLI
-pnpm -F mini-agent-cli build
+pnpm -F mini-agents-cli build
 ```
 
 ### Local Development
 
 ```bash
 # Start framework watch mode
-pnpm -F mini-agent dev
+pnpm -F mini-agents dev
 
 # Start CLI watch mode (depends on framework)
-pnpm -F mini-agent-cli dev
+pnpm -F mini-agents-cli dev
 ```
 
 ## License

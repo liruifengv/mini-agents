@@ -2,7 +2,7 @@
  * 首次使用引导流程
  *
  * 交互式询问用户配置 LLM provider、API Key、API URL、Model，
- * 保存到 ~/.mini-agent-cli/settings.json。
+ * 保存到 ~/.mini-agents-cli/settings.json。
  */
 
 import { stdin, stdout } from 'node:process';

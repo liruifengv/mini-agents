@@ -14,7 +14,7 @@ import { findSettingsFile, loadSettingsFromFile, type Settings } from './config'
 const program = new Command();
 
 program
-  .name('mini-agent-cli')
+  .name('mini-agents-cli')
   .description('Mini Agent - AI assistant with tool support')
   .version('0.3.0')
   .option('-w, --workspace <dir>', 'Workspace directory', process.cwd())

@@ -19,10 +19,10 @@
  * - OPENAI_MODEL (默认 gpt-4o-mini)
  */
 
-import { Agent, LLMClient } from 'mini-agent';
-import { getWeatherTool } from 'mini-agent/tools';
-import type { LLMProvider, Message } from 'mini-agent/types';
-import { RetryExhaustedError } from 'mini-agent/utils';
+import { Agent, LLMClient } from 'mini-agents';
+import { getWeatherTool } from 'mini-agents/tools';
+import type { LLMProvider, Message } from 'mini-agents/types';
+import { RetryExhaustedError } from 'mini-agents/utils';
 
 // ============================================================
 // 辅助函数：根据 provider 读取环境变量

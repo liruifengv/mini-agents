@@ -6,12 +6,12 @@
 
 本仓库采用**手动管理**策略：
 
-- `mini-agent`（核心库）和 `mini-agent-cli`（CLI）独立发版
+- `mini-agents`（核心库）和 `mini-agents-cli`（CLI）独立发版
 - CLI 依赖核心库，但核心库不依赖 CLI
 - 当核心库发版时，需要手动给 CLI 也加一个 `patch` changeset 以更新依赖
 
 **示例场景**：
-| 变更 | mini-agent | mini-agent-cli | 操作 |
+| 变更 | mini-agents | mini-agents-cli | 操作 |
 |------|------------|----------------|------|
 | 核心库新增功能 | 0.1.0 → 0.2.0 | 0.1.0 → 0.1.1 | 给两个包都加 changeset |
 | 只改 CLI | 不变 | 升版本 | 只给 CLI 加 changeset |
@@ -24,7 +24,7 @@
 
 1. **在 NPM 网站配置信任发布者**
 
-   访问每个包的 NPM 页面（如 `https://www.npmjs.com/package/mini-agent`）：
+   访问每个包的 NPM 页面（如 `https://www.npmjs.com/package/mini-agents`）：
    - 点击 **Settings** → **Publishing access**
    - 找到 **"Automate publishing with GitHub Actions"** 或 **"Add trusted publisher"**
    - 点击 **"Add a new trusted publisher"**
@@ -40,7 +40,7 @@
 
 3. **重复配置每个包**
 
-   对 `mini-agent` 和 `mini-agent-cli` 两个包都要进行上述配置。
+   对 `mini-agents` 和 `mini-agents-cli` 两个包都要进行上述配置。
 
 ## 开发工作流程
 

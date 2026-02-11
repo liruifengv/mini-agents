@@ -1,7 +1,7 @@
 /**
  * CLI 配置管理
  *
- * 使用 Zod 定义配置 schema，从 ~/.mini-agent-cli/settings.json 加载配置。
+ * 使用 Zod 定义配置 schema，从 ~/.mini-agents-cli/settings.json 加载配置。
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -79,10 +79,10 @@ export type MCPConfig = z.infer<typeof MCPConfigSchema>;
 // 加载函数
 // ============================================================
 
-/** 配置文件目录：~/.mini-agent-cli */
-const CONFIG_DIR = join(homedir(), '.mini-agent-cli');
+/** 配置文件目录：~/.mini-agents-cli */
+const CONFIG_DIR = join(homedir(), '.mini-agents-cli');
 
-/** 用户配置文件路径：~/.mini-agent-cli/settings.json */
+/** 用户配置文件路径：~/.mini-agents-cli/settings.json */
 const USER_SETTINGS_FILE = join(CONFIG_DIR, 'settings.json');
 
 /** 本地配置文件名（开发模式） */
@@ -109,7 +109,7 @@ export function getSettingsPath(): string {
  * 按优先级搜索配置文件
  *
  * 搜索顺序：
- * 1. ~/.mini-agent-cli/settings.json（用户自定义）
+ * 1. ~/.mini-agents-cli/settings.json（用户自定义）
  * 2. {packageDir}/config/settings.json（包内置，开发模式）
  *
  * @returns 找到的配置文件路径，未找到返回 null
@@ -122,7 +122,7 @@ export function findSettingsFile(): string | null {
  * 按优先级搜索配置文件（通用版）
  *
  * 搜索顺序：
- * 1. ~/.mini-agent-cli/{filename}（用户自定义）
+ * 1. ~/.mini-agents-cli/{filename}（用户自定义）
  * 2. {packageDir}/config/{filename}（包内置默认）
  *
  * @param filename - 要搜索的文件名（如 system_prompt.md）
@@ -144,7 +144,7 @@ export function findConfigFile(filename: string): string | null {
 /**
  * 创建默认配置文件
  *
- * 在 ~/.mini-agent-cli/settings.json 创建模板配置。
+ * 在 ~/.mini-agents-cli/settings.json 创建模板配置。
  *
  * @returns 创建的配置文件路径
  */

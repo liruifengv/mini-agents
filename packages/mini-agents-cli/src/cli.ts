@@ -6,8 +6,8 @@
 
 import { readFileSync } from 'node:fs';
 import { stdin, stdout } from 'node:process';
-import type { AgentMessageEvent } from 'mini-agent';
-import { Agent, LLMClient } from 'mini-agent';
+import type { AgentMessageEvent } from 'mini-agents';
+import { Agent, LLMClient } from 'mini-agents';
 import {
   createBashTool,
   createEditTool,
@@ -16,7 +16,7 @@ import {
   createWriteTool,
   SkillLoader,
   type Tool,
-} from 'mini-agent/tools';
+} from 'mini-agents/tools';
 import type { Settings } from './config';
 import { findConfigFile } from './config';
 

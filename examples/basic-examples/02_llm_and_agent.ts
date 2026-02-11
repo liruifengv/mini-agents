@@ -18,9 +18,9 @@
  * - OPENAI_MODEL (默认 gpt-5-mini)
  */
 
-import { Agent, AnthropicClient, OpenAIClient } from 'mini-agent';
-import { getWeatherTool } from 'mini-agent/tools';
-import type { Message } from 'mini-agent/types';
+import { Agent, AnthropicClient, OpenAIClient } from 'mini-agents';
+import { getWeatherTool } from 'mini-agents/tools';
+import type { Message } from 'mini-agents/types';
 
 // ============================================================
 // Anthropic Client

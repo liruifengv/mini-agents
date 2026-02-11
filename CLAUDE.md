@@ -2,7 +2,7 @@
 
 ## 项目目的
 
-1. **实现 mini-agent 框架** - 将 Python 版本的 mini-agent 复刻为 TypeScript 版本
+1. **实现 mini-agents 框架** - 将 Python 版本的 mini-agent 复刻为 TypeScript 版本
 2. **学习 agent 开发知识** - 通过阅读和理解 Python 代码，学习 AI Agent 的设计与实现
 
 ## 开发流程
@@ -48,7 +48,7 @@
 ## 参考代码位置
 
 - Python 版本：`libs/Mini-Agent/`
-- TypeScript 版本：`packages/mini-agent/`
+- TypeScript 版本：`packages/mini-agents/`
 
 ## 实现规范
 
@@ -102,13 +102,13 @@ export function createXxxTool(workspaceDir: string) {
 3. 返回值：成功返回 `string`，失败返回 `ToolResult` 对象
 4. 路径处理：支持相对路径（基于 workspaceDir）和绝对路径
 
-**参考实现**：`packages/mini-agent/src/tools/read-tool.ts`
+**参考实现**：`packages/mini-agents/src/tools/read-tool.ts`
 
 ### 单元测试规范
 
 每个新功能必须编写对应的单元测试，使用 Vitest 框架。
 
-**文件位置**：`packages/mini-agent/tests/` 目录下，与源码结构对应
+**文件位置**：`packages/mini-agents/tests/` 目录下，与源码结构对应
 - 工具测试：`tests/tools/xxx-tool.test.ts`
 - 工具函数测试：`tests/utils/xxx.test.ts`
 - LLM 测试：`tests/llm/xxx.test.ts`
@@ -151,10 +151,10 @@ describe('FeatureName', () => {
 pnpm test
 
 # 运行单个测试文件
-pnpm test packages/mini-agent/tests/tools/xxx-tool.test.ts
+pnpm test packages/mini-agents/tests/tools/xxx-tool.test.ts
 ```
 
-**参考实现**：`packages/mini-agent/tests/tools/read-tool.test.ts`
+**参考实现**：`packages/mini-agents/tests/tools/read-tool.test.ts`
 
 ## 开发计划
 

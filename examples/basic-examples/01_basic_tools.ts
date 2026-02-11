@@ -7,7 +7,7 @@
  * - EditTool: Edit file contents
  * - BashTool: Execute shell commands
  *
- * Based on: packages/mini-agent/tests/tools/read-tool.test.ts
+ * Based on: packages/mini-agents/tests/tools/read-tool.test.ts
  */
 
 import * as fs from 'node:fs/promises';
@@ -21,7 +21,7 @@ import {
   createEditTool,
   createReadTool,
   createWriteTool,
-} from 'mini-agent/tools';
+} from 'mini-agents/tools';
 
 async function demoReadTool() {
   console.log(`\n${'='.repeat(60)}`);

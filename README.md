@@ -1,11 +1,11 @@
-# mini-agent
+# mini-agents
 
 [English](README.en.md) | 中文
 
-**mini-agent** 是一个极简但专业的 TypeScript Agent 框架，灵感来源于 MiniMax 开源的 Python 版本的 [Mini-Agent](https://github.com/MiniMax-AI/Mini-Agent)。项目由两部分组成：
+**mini-agents** 是一个极简但专业的 TypeScript Agent 框架，灵感来源于 MiniMax 开源的 Python 版本的 [Mini-Agent](https://github.com/MiniMax-AI/Mini-Agent)。项目由两部分组成：
 
-- **mini-agent**: 可独立使用的 Agent 框架，提供 LLM 客户端、工具系统和 Agent 核心逻辑
-- **mini-agent-cli**: 基于框架构建的交互式命令行工具
+- **mini-agents**: 可独立使用的 Agent 框架，提供 LLM 客户端、工具系统和 Agent 核心逻辑
+- **mini-agents-cli**: 基于框架构建的交互式命令行工具
 
 ## 特性
 
@@ -18,12 +18,12 @@
 
 ## 目录
 
-- [mini-agent](#mini-agent)
+- [mini-agents](#mini-agents)
   - [特性](#特性)
   - [项目结构](#项目结构)
   - [快速开始](#快速开始)
-    - [使用 mini-agent-cli](#使用-mini-agent-cli)
-    - [在项目中使用 mini-agent 框架](#在项目中使用-mini-agent-框架)
+    - [使用 mini-agents-cli](#使用-mini-agents-cli)
+    - [在项目中使用 mini-agents 框架](#在项目中使用-mini-agents-框架)
   - [配置说明](#配置说明)
   - [工具列表](#工具列表)
   - [开发](#开发)
@@ -32,9 +32,9 @@
 ## 项目结构
 
 ```
-mini-agent/
+mini-agents/
 ├── packages/
-│   ├── mini-agent/           # 框架层 - 可独立使用
+│   ├── mini-agents/           # 框架层 - 可独立使用
 │   │   ├── src/
 │   │   │   ├── tools/        # 工具实现 (read/write/edit/bash/skill)
 │   │   │   ├── llm/          # LLM 客户端 (anthropic/openai)
@@ -43,7 +43,7 @@ mini-agent/
 │   │   │   └── utils/        # 工具函数 (token/retry)
 │   │   └── tests/            # 单元测试
 │   │
-│   └── mini-agent-cli/       # CLI 层 - 交互式应用
+│   └── mini-agents-cli/       # CLI 层 - 交互式应用
 │       ├── src/
 │       │   ├── index.ts      # 入口
 │       │   ├── cli.ts        # CLI 实现
@@ -64,25 +64,25 @@ mini-agent/
 2. **API Key**: 从对应供应商处获取
 ---
 
-### 使用 mini-agent-cli
+### 使用 mini-agents-cli
 
-**mini-agent-cli** 是一个开箱即用的交互式命令行工具，适合直接体验 Agent 功能。
+**mini-agents-cli** 是一个开箱即用的交互式命令行工具，适合直接体验 Agent 功能。
 
 ```bash
 # 全局安装
-npm install -g mini-agent-cli
+npm install -g mini-agents-cli
 
 # 或使用 npx 直接运行
-npx mini-agent-cli
+npx mini-agents-cli
 ```
 
 **首次运行配置：**
 
 ```bash
 # 运行 CLI
-mini-agent-cli
+mini-agents-cli
 
-# CLI 首次运行会引导选择供应商并设置 API_KEY，并写入默认配置文件 ~/.mini-agent-cli/setting.json
+# CLI 首次运行会引导选择供应商并设置 API_KEY，并写入默认配置文件 ~/.mini-agents-cli/setting.json
 ```
 
 **CLI 内置命令：**
@@ -95,13 +95,13 @@ mini-agent-cli
 
 ---
 
-### 在项目中使用 mini-agent 框架
+### 在项目中使用 mini-agents 框架
 
-**mini-agent** 是一个可独立使用的极简 Agent 开发框架
+**mini-agents** 是一个可独立使用的极简 Agent 开发框架
 
 ```bash
 # 安装框架
-npm install mini-agent
+npm install mini-agents
 
 # 框架依赖 Zod 进行参数校验
 npm install zod
@@ -110,8 +110,8 @@ npm install zod
 #### 1. 基础使用
 
 ```typescript
-import { Agent, LLMClient } from 'mini-agent';
-import { createReadTool, createWriteTool, createBashTool } from 'mini-agent/tools';
+import { Agent, LLMClient } from 'mini-agents';
+import { createReadTool, createWriteTool, createBashTool } from 'mini-agents/tools';
 
 // 创建 LLM 客户端
 const llm = new LLMClient({
@@ -156,7 +156,7 @@ for await (const event of agent.run()) {
 #### 2. 使用 Skill 系统
 
 ```typescript
-import { SkillLoader, createGetSkillTool } from 'mini-agent/tools';
+import { SkillLoader, createGetSkillTool } from 'mini-agents/tools';
 
 // 加载 Skills
 const skillLoader = new SkillLoader('./skills');
@@ -202,7 +202,7 @@ await runPromise;
 #### 4. 自定义工具
 
 ```typescript
-import { tool } from 'mini-agent';
+import { tool } from 'mini-agents';
 import { z } from 'zod';
 
 // 使用工厂函数创建自定义工具
@@ -228,7 +228,7 @@ export function createMyTool(apiKey: string) {
 
 ### CLI 配置
 
-**配置文件路径**: `~/.mini-agent-cli/setting.json`
+**配置文件路径**: `~/.mini-agents-cli/setting.json`
 
 ```json
 {
@@ -253,7 +253,7 @@ export function createMyTool(apiKey: string) {
 
 **配置优先级**:
 1. 环境变量 (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`)
-2. `~/.mini-agent-cli/setting.json`
+2. `~/.mini-agents-cli/setting.json`
 3. 内置默认值
 
 ### 框架配置
@@ -291,8 +291,8 @@ const agent = new Agent(llm, systemPrompt, tools, {
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/mini-agent.git
-cd mini-agent
+git clone https://github.com/yourusername/mini-agents.git
+cd mini-agents
 
 # 安装依赖
 pnpm install
@@ -305,13 +305,13 @@ pnpm install
 pnpm test
 
 # 运行框架测试
-pnpm test packages/mini-agent
+pnpm test packages/mini-agents
 
 # 运行 CLI 测试
-pnpm test packages/mini-agent-cli
+pnpm test packages/mini-agents-cli
 
 # 运行特定测试文件
-pnpm test packages/mini-agent/tests/tools/read-tool.test.ts
+pnpm test packages/mini-agents/tests/tools/read-tool.test.ts
 ```
 
 ### 构建
@@ -321,20 +321,20 @@ pnpm test packages/mini-agent/tests/tools/read-tool.test.ts
 pnpm build
 
 # 构建框架
-pnpm -F mini-agent build
+pnpm -F mini-agents build
 
 # 构建 CLI
-pnpm -F mini-agent-cli build
+pnpm -F mini-agents-cli build
 ```
 
 ### 本地开发
 
 ```bash
 # 启动框架监视模式
-pnpm -F mini-agent dev
+pnpm -F mini-agents dev
 
 # 启动 CLI 监视模式（依赖框架）
-pnpm -F mini-agent-cli dev
+pnpm -F mini-agents-cli dev
 ```
 
 ## 许可证

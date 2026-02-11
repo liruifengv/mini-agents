@@ -9,7 +9,7 @@ describe('Config', () => {
 
   beforeAll(() => {
     // 创建临时目录
-    tempDir = join(tmpdir(), `mini-agent-cli-config-test-${Date.now()}`);
+    tempDir = join(tmpdir(), `mini-agents-cli-config-test-${Date.now()}`);
     mkdirSync(tempDir, { recursive: true });
   });
 
@@ -166,9 +166,9 @@ describe('Config', () => {
   });
 
   describe('getSettingsPath', () => {
-    it('should return path under ~/.mini-agent-cli', () => {
+    it('should return path under ~/.mini-agents-cli', () => {
       const settingPath = getSettingsPath();
-      expect(settingPath).toContain('.mini-agent-cli');
+      expect(settingPath).toContain('.mini-agents-cli');
       expect(settingPath).toContain('settings.json');
     });
   });

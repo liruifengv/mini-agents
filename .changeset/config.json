@@ -7,5 +7,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["mini-agent-basic-examples"]
+  "ignore": ["mini-agents-basic-examples"]
 }
