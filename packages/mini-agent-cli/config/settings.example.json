@@ -1,0 +1,8 @@
+{
+  "llm": {
+    "apiKey": "YOUR_API_KEY_HERE",
+    "apiBase": "https://api.anthropic.com",
+    "model": "claude-sonnet-4-20250514",
+    "provider": "anthropic"
+  }
+}

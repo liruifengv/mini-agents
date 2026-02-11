@@ -1,0 +1,60 @@
+{
+  "name": "mini-agent",
+  "version": "0.0.0",
+  "description": "A mini AI agent framework",
+  "type": "module",
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rm -rf dist",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "check": "biome check .",
+    "check:fix": "biome check . --write"
+  },
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./types": "./dist/types.d.mts",
+    "./llm": {
+      "types": "./dist/llm.d.mts",
+      "default": "./dist/llm.mjs"
+    },
+    "./tools": {
+      "types": "./dist/tools.d.mts",
+      "default": "./dist/tools.mjs"
+    },
+    "./agent": {
+      "types": "./dist/agent.d.mts",
+      "default": "./dist/agent.mjs"
+    },
+    "./utils": {
+      "types": "./dist/utils.d.mts",
+      "default": "./dist/utils.mjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "ai",
+    "agent"
+  ],
+  "author": "",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsdown": "^0.16.6",
+    "tsx": "^4.20.6",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.70.0",
+    "gpt-tokenizer": "^3.4.0",
+    "openai": "^6.9.0",
+    "zod": "^4.1.12"
+  }
+}
