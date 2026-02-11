@@ -1,6 +1,7 @@
 {
-  "name": "mini-agent",
+  "name": "mini-agent-monorepo",
   "version": "0.0.0",
+  "private": true,
   "description": "A mini AI agent",
   "scripts": {
     "build": "pnpm -r build",

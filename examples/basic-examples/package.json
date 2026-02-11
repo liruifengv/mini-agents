@@ -1,6 +1,7 @@
 {
   "name": "mini-agent-basic-examples",
   "version": "1.0.0",
+  "private": true,
   "description": "A mini AI agent in CLI",
   "type": "module",
   "scripts": {
@@ -19,8 +20,5 @@
   },
   "dependencies": {
     "mini-agent": "workspace:*"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }
