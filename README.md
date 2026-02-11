@@ -291,7 +291,7 @@ const agent = new Agent(llm, systemPrompt, tools, {
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/mini-agents.git
+git clone https://github.com/liruifengv/mini-agents.git
 cd mini-agents
 
 # 安装依赖

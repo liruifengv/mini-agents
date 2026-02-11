@@ -292,7 +292,7 @@ If you want to contribute to the project or build from source, please refer to t
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/mini-agents.git
+git clone https://github.com/liruifengv/mini-agents.git
 cd mini-agents
 
 # Install dependencies
