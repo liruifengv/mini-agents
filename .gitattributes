@@ -1,0 +1,3 @@
+# 让 GitHub Linguist 忽略 skills 目录下的 Python 脚本
+# 这些脚本是工具/辅助脚本，不是项目的主要语言
+packages/mini-agents-cli/skills/**/*.py linguist-vendored
