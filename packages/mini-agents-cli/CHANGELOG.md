@@ -1,5 +1,13 @@
 # mini-agents-cli
 
+## 0.0.3
+
+### Patch Changes
+
+- 6129337: feat: add Gemini and OpenAI Chat provider options to CLI onboarding
+- Updated dependencies [ef5642a]
+  - mini-agents@0.0.3
+
 ## 0.0.2
 
 ### Patch Changes
