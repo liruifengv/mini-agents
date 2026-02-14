@@ -21,6 +21,11 @@
   ],
   "author": "",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liruifengv/mini-agents.git",
+    "directory": "packages/mini-agents-cli"
+  },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "tsdown": "^0.16.6",
