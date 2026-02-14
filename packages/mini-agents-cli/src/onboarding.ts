@@ -25,7 +25,15 @@ const PROVIDER_PRESETS: Record<string, { apiBaseURL: string; model: string }> = 
   },
   openai: {
     apiBaseURL: 'https://api.openai.com/v1',
-    model: 'gpt-4o',
+    model: 'gpt-5-mini',
+  },
+  'openai-chat': {
+    apiBaseURL: 'https://api.openai.com/v1',
+    model: 'gpt-5-mini',
+  },
+  gemini: {
+    apiBaseURL: '',
+    model: 'gemini-2.5-flash',
   },
 };
 
@@ -46,9 +54,17 @@ export async function runOnboarding(): Promise<string> {
     // 1. 选择 Provider
     console.log(`${BOLD}${YELLOW}[1/4] LLM Provider${RESET}`);
     console.log(`  ${GREEN}1${RESET}) Anthropic (Claude)`);
-    console.log(`  ${GREEN}2${RESET}) OpenAI`);
-    const providerChoice = await rl.question(`${DIM}Choose [1/2] (default: 1): ${RESET}`);
-    const provider = providerChoice.trim() === '2' ? 'openai' : 'anthropic';
+    console.log(`  ${GREEN}2${RESET}) OpenAI (Responses API)`);
+    console.log(`  ${GREEN}3${RESET}) OpenAI Chat (Chat Completions API)`);
+    console.log(`  ${GREEN}4${RESET}) Gemini`);
+    const providerChoice = await rl.question(`${DIM}Choose [1/2/3/4] (default: 1): ${RESET}`);
+    const providerMap: Record<string, string> = {
+      '1': 'anthropic',
+      '2': 'openai',
+      '3': 'openai-chat',
+      '4': 'gemini',
+    };
+    const provider = providerMap[providerChoice.trim()] || 'anthropic';
     const preset = PROVIDER_PRESETS[provider];
     console.log(`  → ${CYAN}${provider}${RESET}`);
     console.log();
@@ -63,11 +79,10 @@ export async function runOnboarding(): Promise<string> {
 
     // 3. API Base URL
     console.log(`${BOLD}${YELLOW}[3/4] API Base URL${RESET}`);
-    const apiBaseURLInput = await rl.question(
-      `${DIM}URL (default: ${preset.apiBaseURL}): ${RESET}`
-    );
+    const defaultURLHint = preset.apiBaseURL || 'Google default endpoint';
+    const apiBaseURLInput = await rl.question(`${DIM}URL (default: ${defaultURLHint}): ${RESET}`);
     const apiBaseURL = apiBaseURLInput.trim() || preset.apiBaseURL;
-    console.log(`  → ${CYAN}${apiBaseURL}${RESET}`);
+    console.log(`  → ${CYAN}${apiBaseURL || '(Google default endpoint)'}${RESET}`);
     console.log();
 
     // 4. Model

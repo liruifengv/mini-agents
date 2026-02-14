@@ -28,7 +28,7 @@ const LLMConfigSchema = z.object({
   apiKey: z.string(),
   apiBaseURL: z.string(),
   model: z.string(),
-  provider: z.enum(['anthropic', 'openai']),
+  provider: z.enum(['anthropic', 'openai', 'openai-chat', 'gemini']),
   retry: z.unknown().default({}).pipe(RetryConfigSchema),
 });
 
