@@ -1,6 +1,6 @@
 {
   "name": "mini-agents",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A mini AI agent framework",
   "type": "module",
   "scripts": {

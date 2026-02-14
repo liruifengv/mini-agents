@@ -1,5 +1,11 @@
 # mini-agents
 
+## 0.0.3
+
+### Patch Changes
+
+- ef5642a: feat: add Google Gemini LLM provider support with function calling, thinking extraction, and custom base URL
+
 ## 0.0.2
 
 ### Patch Changes
