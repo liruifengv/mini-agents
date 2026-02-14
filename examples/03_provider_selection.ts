@@ -5,9 +5,11 @@
  * - 使用 Anthropic provider 对话
  * - 使用 OpenAI provider（Responses API）对话
  * - 使用 OpenAI Chat provider（Chat Completions API）对话
+ * - 使用 Gemini provider 对话
  * - 在 Agent 中使用 LLMClient（Anthropic）
  * - 在 Agent 中使用 LLMClient（OpenAI）
  * - 在 Agent 中使用 LLMClient（OpenAI Chat）
+ * - 在 Agent 中使用 LLMClient（Gemini）
  * - 错误重试演示（RetryExhaustedError）
  *
  * Anthropic 环境变量：
@@ -19,6 +21,11 @@
  * - OPENAI_API_KEY
  * - OPENAI_API_BASE_URL
  * - OPENAI_MODEL (默认 gpt-4o-mini)
+ *
+ * Gemini 环境变量：
+ * - GEMINI_API_KEY
+ * - GEMINI_API_BASE_URL (可选，留空则使用 Google 默认端点)
+ * - GEMINI_MODEL (默认 gemini-2.5-flash)
  */
 
 import { Agent, LLMClient } from 'mini-agents';
@@ -48,6 +55,13 @@ function getConfig(provider: LLMProvider) {
       apiKey: process.env.ANTHROPIC_API_KEY,
       apiBaseURL: process.env.ANTHROPIC_API_BASE_URL,
       model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514',
+    };
+  }
+  if (provider === 'gemini') {
+    return {
+      apiKey: process.env.GEMINI_API_KEY,
+      apiBaseURL: process.env.GEMINI_API_BASE_URL || '',
+      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
     };
   }
   return {
@@ -208,7 +222,7 @@ const demoAgentWithAnthropic = async () => {
     for await (const event of agent.run()) {
       switch (event.type) {
         case 'thinking':
-          console.log(`[Thinking] ${event.content}`);
+          console.log(`[Thinking] ${event.thinking}`);
           break;
         case 'toolCall':
           console.log(
@@ -258,7 +272,7 @@ const demoAgentWithOpenAI = async () => {
     for await (const event of agent.run()) {
       switch (event.type) {
         case 'thinking':
-          console.log(`[Thinking] ${event.content}`);
+          console.log(`[Thinking] ${event.thinking}`);
           break;
         case 'toolCall':
           console.log(
@@ -309,7 +323,102 @@ const demoAgentWithOpenAIChat = async () => {
     for await (const event of agent.run()) {
       switch (event.type) {
         case 'thinking':
-          console.log(`[Thinking] ${event.content}`);
+          console.log(`[Thinking] ${event.thinking}`);
+          break;
+        case 'toolCall':
+          console.log(
+            `[Tool Call] ${event.toolCall.function.name}(${JSON.stringify(event.toolCall.function.arguments)})`
+          );
+          break;
+        case 'toolResult':
+          console.log(`[Tool Result] ${event.result.content}`);
+          break;
+        case 'assistantMessage':
+          console.log(`[Assistant] ${event.content}`);
+          break;
+      }
+    }
+  } catch (error) {
+    console.error('Agent error:', error);
+  }
+};
+
+// ============================================================
+// Demo 7: 使用 Gemini Provider
+// ============================================================
+
+const demoGeminiProvider = async () => {
+  console.log(`\n${'='.repeat(60)}`);
+  console.log('DEMO: LLMClient with Gemini Provider');
+  console.log('='.repeat(60));
+
+  const { apiKey, apiBaseURL, model } = getConfig('gemini');
+  if (!apiKey) {
+    console.log('Skipped: GEMINI_API_KEY not set');
+    return;
+  }
+
+  const client = new LLMClient({
+    apiKey,
+    provider: 'gemini',
+    apiBaseURL: apiBaseURL ?? '',
+    model,
+    providerOptions: {
+      thinkingConfig: { includeThoughts: true },
+    },
+  });
+
+  console.log(`Provider: ${client.provider}`);
+  console.log(`API Base: ${client.apiBaseURL || '(default)'}`);
+  console.log(`Model: ${client.model}`);
+
+  const messages: Message[] = [
+    { role: 'user', content: "Say 'Hello from Gemini!' in one sentence." },
+  ];
+  console.log(`\nUser: ${messages[0].content}`);
+
+  const response = await client.generate(messages);
+  if (response.thinking) {
+    console.log(`Thinking: ${response.thinking}`);
+  }
+  console.log(`Model: ${response.content}`);
+  console.log('Gemini provider demo completed');
+};
+
+// ============================================================
+// Demo 8: 在 Agent 中使用 LLMClient（Gemini）
+// ============================================================
+
+const demoAgentWithGemini = async () => {
+  console.log(`\n${'='.repeat(60)}`);
+  console.log('DEMO 8: Agent with LLMClient (Gemini)');
+  console.log('='.repeat(60));
+
+  const { apiKey, apiBaseURL, model } = getConfig('gemini');
+  if (!apiKey) {
+    console.log('Skipped: GEMINI_API_KEY not set');
+    return;
+  }
+
+  const client = new LLMClient({
+    apiKey,
+    provider: 'gemini',
+    apiBaseURL: apiBaseURL ?? '',
+    model,
+    providerOptions: {
+      thinkingConfig: { includeThoughts: true },
+    },
+  });
+
+  const systemPrompt = 'You are a helpful assistant.';
+  const agent = new Agent(client, systemPrompt, [getWeatherTool]);
+  agent.addUserMessage('北京的天气怎么样');
+
+  try {
+    for await (const event of agent.run()) {
+      switch (event.type) {
+        case 'thinking':
+          console.log(`[Thinking] ${event.thinking}`);
           break;
         case 'toolCall':
           console.log(
@@ -387,9 +496,11 @@ async function main() {
     await demoAnthropicProvider();
     await demoOpenAIProvider();
     await demoOpenAIChatProvider();
+    await demoGeminiProvider();
     await demoAgentWithAnthropic();
     await demoAgentWithOpenAI();
     await demoAgentWithOpenAIChat();
+    await demoAgentWithGemini();
     await demoRetryError();
 
     console.log(`\n${'='.repeat(60)}`);

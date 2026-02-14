@@ -86,4 +86,22 @@ export abstract class Tool {
       strict: null,
     };
   }
+
+  /**
+   * 转换为 Gemini FunctionDeclaration 格式
+   *
+   * 使用 parametersJsonSchema 字段传递标准 JSON Schema，
+   * Gemini SDK 可直接接受此格式。
+   */
+  toGeminiSchema(): {
+    name: string;
+    description: string;
+    parametersJsonSchema: Record<string, unknown>;
+  } {
+    return {
+      name: this.name,
+      description: this.description,
+      parametersJsonSchema: this.parameters,
+    };
+  }
 }

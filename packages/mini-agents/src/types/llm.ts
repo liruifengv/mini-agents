@@ -3,7 +3,7 @@ import type { Tool } from '../tools';
 /**
  * LLM 提供商类型
  */
-export type LLMProvider = 'anthropic' | 'openai' | 'openai-chat';
+export type LLMProvider = 'anthropic' | 'openai' | 'openai-chat' | 'gemini';
 
 /**
  * 函数调用详情

@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AnthropicClient } from '../../src/llm/anthropic-client';
+import { GeminiClient } from '../../src/llm/gemini-client';
 import { LLMClient } from '../../src/llm/llm-wrapper';
 import { OpenAIChatClient } from '../../src/llm/openai-chat-client';
 import { OpenAIClient } from '../../src/llm/openai-client';
@@ -43,6 +44,19 @@ vi.mock('../../src/llm/openai-chat-client', () => {
     this.retryCallback = null;
   });
   return { OpenAIChatClient: MockOpenAIChatClient };
+});
+
+vi.mock('../../src/llm/gemini-client', () => {
+  const MockGeminiClient = vi.fn(function (this: any) {
+    this.generate = vi.fn().mockResolvedValue({
+      content: 'gemini response',
+      thinking: null,
+      toolCalls: null,
+      finishReason: 'STOP',
+    });
+    this.retryCallback = null;
+  });
+  return { GeminiClient: MockGeminiClient };
 });
 
 describe('LLMClient', () => {
@@ -154,6 +168,39 @@ describe('LLMClient', () => {
       );
     });
 
+    it('should create GeminiClient when provider is gemini', () => {
+      const wrapper = new LLMClient({
+        ...baseOptions,
+        provider: 'gemini',
+      });
+
+      expect(wrapper.provider).toBe('gemini');
+      expect(GeminiClient).toHaveBeenCalledWith(
+        'test-key',
+        'https://api.example.com',
+        'test-model',
+        undefined, // providerOptions
+        undefined // retryConfig
+      );
+    });
+
+    it('should pass providerOptions to GeminiClient', () => {
+      const providerOptions = { thinkingConfig: { includeThoughts: true, thinkingBudget: 2048 } };
+      new LLMClient({
+        ...baseOptions,
+        provider: 'gemini',
+        providerOptions,
+      });
+
+      expect(GeminiClient).toHaveBeenCalledWith(
+        'test-key',
+        'https://api.example.com',
+        'test-model',
+        providerOptions,
+        undefined
+      );
+    });
+
     it('should pass retryConfig to underlying client', () => {
       const retryConfig = {
         enabled: true,
@@ -230,6 +277,18 @@ describe('LLMClient', () => {
       const response = await wrapper.generate(messages);
 
       expect(response.content).toBe('openai-chat response');
+    });
+
+    it('should delegate to GeminiClient.generate', async () => {
+      const wrapper = new LLMClient({
+        ...baseOptions,
+        provider: 'gemini',
+      });
+
+      const messages: Message[] = [{ role: 'user', content: 'Hello' }];
+      const response = await wrapper.generate(messages);
+
+      expect(response.content).toBe('gemini response');
     });
 
     it('should pass tools to underlying client', async () => {

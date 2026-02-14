@@ -11,6 +11,8 @@ import type { RetryConfig } from '../types/retry';
 import type { AnthropicClientOptions } from './anthropic-client';
 import { AnthropicClient } from './anthropic-client';
 import type { LLMClientBase, RetryCallback } from './base';
+import type { GeminiClientOptions } from './gemini-client';
+import { GeminiClient } from './gemini-client';
 import type { OpenAIChatClientOptions } from './openai-chat-client';
 import { OpenAIChatClient } from './openai-chat-client';
 import type { OpenAIClientOptions } from './openai-client';
@@ -31,7 +33,11 @@ export interface LLMClientOptions {
   /** 重试配置（可选） */
   retryConfig?: RetryConfig;
   /** Provider 特定选项（可选） */
-  providerOptions?: AnthropicClientOptions | OpenAIClientOptions | OpenAIChatClientOptions;
+  providerOptions?:
+    | AnthropicClientOptions
+    | OpenAIClientOptions
+    | OpenAIChatClientOptions
+    | GeminiClientOptions;
 }
 
 /**
@@ -95,6 +101,15 @@ export class LLMClient {
           apiBaseURL,
           model,
           providerOptions as OpenAIChatClientOptions,
+          retryConfig
+        );
+        break;
+      case 'gemini':
+        this._client = new GeminiClient(
+          apiKey,
+          apiBaseURL,
+          model,
+          providerOptions as GeminiClientOptions,
           retryConfig
         );
         break;
