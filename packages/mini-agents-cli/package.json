@@ -33,6 +33,7 @@
     "mini-agents": "workspace:*"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   }
 }
