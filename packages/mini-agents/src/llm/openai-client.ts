@@ -56,12 +56,12 @@ export class OpenAIClient extends LLMClientBase {
 
   constructor(
     apiKey: string,
-    apiBaseUrl: string,
+    apiBaseURL: string,
     model: string,
     options?: OpenAIClientOptions,
     retryConfig?: RetryConfig
   ) {
-    super(apiKey, apiBaseUrl, model, retryConfig);
+    super(apiKey, apiBaseURL, model, retryConfig);
 
     this.maxOutputTokens = options?.maxOutputTokens ?? 16384;
     this.reasoning = options?.reasoning ?? null;
@@ -69,7 +69,7 @@ export class OpenAIClient extends LLMClientBase {
 
     this.client = new OpenAI({
       apiKey,
-      baseURL: apiBaseUrl,
+      baseURL: apiBaseURL,
     });
   }
 

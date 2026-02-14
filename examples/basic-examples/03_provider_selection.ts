@@ -3,9 +3,11 @@
  *
  * 演示通过 LLMClient 使用不同 provider 的统一接口：
  * - 使用 Anthropic provider 对话
- * - 使用 OpenAI provider 对话
+ * - 使用 OpenAI provider（Responses API）对话
+ * - 使用 OpenAI Chat provider（Chat Completions API）对话
  * - 在 Agent 中使用 LLMClient（Anthropic）
  * - 在 Agent 中使用 LLMClient（OpenAI）
+ * - 在 Agent 中使用 LLMClient（OpenAI Chat）
  * - 错误重试演示（RetryExhaustedError）
  *
  * Anthropic 环境变量：
@@ -13,7 +15,7 @@
  * - ANTHROPIC_API_BASE_URL
  * - ANTHROPIC_MODEL (默认 claude-sonnet-4-20250514)
  *
- * OpenAI 环境变量：
+ * OpenAI 环境变量（Responses API 和 Chat Completions API 共用）：
  * - OPENAI_API_KEY
  * - OPENAI_API_BASE_URL
  * - OPENAI_MODEL (默认 gpt-4o-mini)
@@ -32,13 +34,13 @@ function getConfig(provider: LLMProvider) {
   if (provider === 'anthropic') {
     return {
       apiKey: process.env.ANTHROPIC_API_KEY,
-      apiBase: process.env.ANTHROPIC_API_BASE_URL,
+      apiBaseURL: process.env.ANTHROPIC_API_BASE_URL,
       model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514',
     };
   }
   return {
     apiKey: process.env.OPENAI_API_KEY,
-    apiBase: process.env.OPENAI_API_BASE_URL,
+    apiBaseURL: process.env.OPENAI_API_BASE_URL,
     model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
   };
 }
@@ -52,8 +54,8 @@ const demoAnthropicProvider = async () => {
   console.log('DEMO: LLMClient with Anthropic Provider');
   console.log('='.repeat(60));
 
-  const { apiKey, apiBase, model } = getConfig('anthropic');
-  if (!apiKey || !apiBase) {
+  const { apiKey, apiBaseURL, model } = getConfig('anthropic');
+  if (!apiKey || !apiBaseURL) {
     console.log('Skipped: ANTHROPIC_API_KEY or ANTHROPIC_API_BASE_URL not set');
     return;
   }
@@ -61,12 +63,12 @@ const demoAnthropicProvider = async () => {
   const client = new LLMClient({
     apiKey,
     provider: 'anthropic',
-    apiBase,
+    apiBaseURL,
     model,
   });
 
   console.log(`Provider: ${client.provider}`);
-  console.log(`API Base: ${client.apiBase}`);
+  console.log(`API Base: ${client.apiBaseURL}`);
   console.log(`Model: ${client.model}`);
 
   const messages: Message[] = [
@@ -91,8 +93,8 @@ const demoOpenAIProvider = async () => {
   console.log('DEMO: LLMClient with OpenAI Provider');
   console.log('='.repeat(60));
 
-  const { apiKey, apiBase, model } = getConfig('openai');
-  if (!apiKey || !apiBase) {
+  const { apiKey, apiBaseURL, model } = getConfig('openai');
+  if (!apiKey || !apiBaseURL) {
     console.log('Skipped: OPENAI_API_KEY or OPENAI_API_BASE_URL not set');
     return;
   }
@@ -100,12 +102,12 @@ const demoOpenAIProvider = async () => {
   const client = new LLMClient({
     apiKey,
     provider: 'openai',
-    apiBase,
+    apiBaseURL,
     model,
   });
 
   console.log(`Provider: ${client.provider}`);
-  console.log(`API Base: ${client.apiBase}`);
+  console.log(`API Base: ${client.apiBaseURL}`);
   console.log(`Model: ${client.model}`);
 
   const messages: Message[] = [
@@ -122,16 +124,59 @@ const demoOpenAIProvider = async () => {
 };
 
 // ============================================================
-// Demo 3: 在 Agent 中使用 LLMClient（Anthropic）
+// Demo 3: 使用 OpenAI Chat Provider（Chat Completions API）
+// 兼容 Ollama、vLLM、LiteLLM、OpenRouter、Together、Groq、DeepSeek 等
+// ============================================================
+
+const demoOpenAIChatProvider = async () => {
+  console.log(`\n${'='.repeat(60)}`);
+  console.log('DEMO: LLMClient with OpenAI Chat Provider (Chat Completions API)');
+  console.log('='.repeat(60));
+
+  const { apiKey, apiBaseURL, model } = getConfig('openai-chat');
+  if (!apiKey || !apiBaseURL) {
+    console.log('Skipped: OPENAI_API_KEY or OPENAI_API_BASE_URL not set');
+    return;
+  }
+
+  const client = new LLMClient({
+    apiKey,
+    provider: 'openai-chat',
+    apiBaseURL,
+    model,
+    providerOptions: {
+      maxTokens: 4096,
+    },
+  });
+
+  console.log(`Provider: ${client.provider}`);
+  console.log(`API Base: ${client.apiBaseURL}`);
+  console.log(`Model: ${client.model}`);
+
+  const messages: Message[] = [
+    { role: 'user', content: "Say 'Hello from Chat Completions API!' in one sentence." },
+  ];
+  console.log(`\nUser: ${messages[0].content}`);
+
+  const response = await client.generate(messages);
+  if (response.thinking) {
+    console.log(`Thinking: ${response.thinking}`);
+  }
+  console.log(`Model: ${response.content}`);
+  console.log('OpenAI Chat provider demo completed');
+};
+
+// ============================================================
+// Demo 4: 在 Agent 中使用 LLMClient（Anthropic）
 // ============================================================
 
 const demoAgentWithAnthropic = async () => {
   console.log(`\n${'='.repeat(60)}`);
-  console.log('DEMO: Agent with LLMClient (Anthropic)');
+  console.log('DEMO 4: Agent with LLMClient (Anthropic)');
   console.log('='.repeat(60));
 
-  const { apiKey, apiBase, model } = getConfig('anthropic');
-  if (!apiKey || !apiBase) {
+  const { apiKey, apiBaseURL, model } = getConfig('anthropic');
+  if (!apiKey || !apiBaseURL) {
     console.log('Skipped: ANTHROPIC_API_KEY or ANTHROPIC_API_BASE_URL not set');
     return;
   }
@@ -139,7 +184,7 @@ const demoAgentWithAnthropic = async () => {
   const client = new LLMClient({
     apiKey,
     provider: 'anthropic',
-    apiBase,
+    apiBaseURL,
     model,
   });
 
@@ -148,24 +193,38 @@ const demoAgentWithAnthropic = async () => {
   agent.addUserMessage('北京的天气怎么样');
 
   try {
-    const result = await agent.run();
-    console.log('Agent result:', result);
+    for await (const event of agent.run()) {
+      switch (event.type) {
+        case 'thinking':
+          console.log(`[Thinking] ${event.content}`);
+          break;
+        case 'toolCall':
+          console.log(`[Tool Call] ${event.toolCall.function.name}(${JSON.stringify(event.toolCall.function.arguments)})`);
+          break;
+        case 'toolResult':
+          console.log(`[Tool Result] ${event.result.content}`);
+          break;
+        case 'assistantMessage':
+          console.log(`[Assistant] ${event.content}`);
+          break;
+      }
+    }
   } catch (error) {
     console.error('Agent error:', error);
   }
 };
 
 // ============================================================
-// Demo 4: 在 Agent 中使用 LLMClient（OpenAI）
+// Demo 5: 在 Agent 中使用 LLMClient（OpenAI）
 // ============================================================
 
 const demoAgentWithOpenAI = async () => {
   console.log(`\n${'='.repeat(60)}`);
-  console.log('DEMO: Agent with LLMClient (OpenAI)');
+  console.log('DEMO 5: Agent with LLMClient (OpenAI)');
   console.log('='.repeat(60));
 
-  const { apiKey, apiBase, model } = getConfig('openai');
-  if (!apiKey || !apiBase) {
+  const { apiKey, apiBaseURL, model } = getConfig('openai');
+  if (!apiKey || !apiBaseURL) {
     console.log('Skipped: OPENAI_API_KEY or OPENAI_API_BASE_URL not set');
     return;
   }
@@ -173,8 +232,8 @@ const demoAgentWithOpenAI = async () => {
   const client = new LLMClient({
     apiKey,
     provider: 'openai',
-    apiBase,
-    model,
+    apiBaseURL,
+    model
   });
 
   const systemPrompt = 'You are a helpful assistant.';
@@ -182,15 +241,78 @@ const demoAgentWithOpenAI = async () => {
   agent.addUserMessage('北京的天气怎么样');
 
   try {
-    const result = await agent.run();
-    console.log('Agent result:', result);
+    for await (const event of agent.run()) {
+      switch (event.type) {
+        case 'thinking':
+          console.log(`[Thinking] ${event.content}`);
+          break;
+        case 'toolCall':
+          console.log(`[Tool Call] ${event.toolCall.function.name}(${JSON.stringify(event.toolCall.function.arguments)})`);
+          break;
+        case 'toolResult':
+          console.log(`[Tool Result] ${event.result.content}`);
+          break;
+        case 'assistantMessage':
+          console.log(`[Assistant] ${event.content}`);
+          break;
+      }
+    }
   } catch (error) {
     console.error('Agent error:', error);
   }
 };
 
 // ============================================================
-// Demo 5: 错误重试演示
+// Demo 6: 在 Agent 中使用 LLMClient（OpenAI Chat）
+// ============================================================
+
+const demoAgentWithOpenAIChat = async () => {
+  console.log(`\n${'='.repeat(60)}`);
+  console.log('DEMO 6: Agent with LLMClient (OpenAI Chat)');
+  console.log('='.repeat(60));
+
+  const { apiKey, apiBaseURL, model } = getConfig('openai-chat');
+  if (!apiKey || !apiBaseURL) {
+    console.log('Skipped: OPENAI_API_KEY or OPENAI_API_BASE_URL not set');
+    return;
+  }
+
+  const client = new LLMClient({
+    apiKey,
+    provider: 'openai-chat',
+    apiBaseURL,
+    model,
+    providerOptions: { maxTokens: 4096 },
+  });
+
+  const systemPrompt = 'You are a helpful assistant.';
+  const agent = new Agent(client, systemPrompt, [getWeatherTool]);
+  agent.addUserMessage('北京的天气怎么样');
+
+  try {
+    for await (const event of agent.run()) {
+      switch (event.type) {
+        case 'thinking':
+          console.log(`[Thinking] ${event.content}`);
+          break;
+        case 'toolCall':
+          console.log(`[Tool Call] ${event.toolCall.function.name}(${JSON.stringify(event.toolCall.function.arguments)})`);
+          break;
+        case 'toolResult':
+          console.log(`[Tool Result] ${event.result.content}`);
+          break;
+        case 'assistantMessage':
+          console.log(`[Assistant] ${event.content}`);
+          break;
+      }
+    }
+  } catch (error) {
+    console.error('Agent error:', error);
+  }
+};
+
+// ============================================================
+// Demo 7: 错误重试演示
 // ============================================================
 
 const demoRetryError = async () => {
@@ -202,7 +324,7 @@ const demoRetryError = async () => {
   const client = new LLMClient({
     apiKey: 'sk-invalid-key',
     provider: 'openai',
-    apiBase: 'https://api.openai.com/v1',
+    apiBaseURL: 'https://api.openai.com/v1',
     model: 'gpt-4o-mini',
     retryConfig: {
       enabled: true,
@@ -246,8 +368,10 @@ async function main() {
   try {
     await demoAnthropicProvider();
     await demoOpenAIProvider();
+    await demoOpenAIChatProvider();
     await demoAgentWithAnthropic();
     await demoAgentWithOpenAI();
+    await demoAgentWithOpenAIChat();
     await demoRetryError();
 
     console.log(`\n${'='.repeat(60)}`);

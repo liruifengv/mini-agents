@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AnthropicClient } from '../../src/llm/anthropic-client';
 import { LLMClient } from '../../src/llm/llm-wrapper';
+import { OpenAIChatClient } from '../../src/llm/openai-chat-client';
 import { OpenAIClient } from '../../src/llm/openai-client';
 import type { LLMResponse, Message } from '../../src/types/llm';
 
@@ -31,11 +32,24 @@ vi.mock('../../src/llm/openai-client', () => {
   return { OpenAIClient: MockOpenAIClient };
 });
 
+vi.mock('../../src/llm/openai-chat-client', () => {
+  const MockOpenAIChatClient = vi.fn(function (this: any) {
+    this.generate = vi.fn().mockResolvedValue({
+      content: 'openai-chat response',
+      thinking: null,
+      toolCalls: null,
+      finishReason: 'stop',
+    });
+    this.retryCallback = null;
+  });
+  return { OpenAIChatClient: MockOpenAIChatClient };
+});
+
 describe('LLMClient', () => {
   const baseOptions = {
     apiKey: 'test-key',
     provider: 'anthropic' as const,
-    apiBase: 'https://api.example.com',
+    apiBaseURL: 'https://api.example.com',
     model: 'test-model',
   };
 
@@ -52,7 +66,7 @@ describe('LLMClient', () => {
         'test-key',
         'https://api.example.com',
         'test-model',
-        undefined, // anthropicOptions
+        undefined, // providerOptions
         undefined // retryConfig
       );
     });
@@ -68,41 +82,74 @@ describe('LLMClient', () => {
         'test-key',
         'https://api.example.com',
         'test-model',
-        undefined, // openaiOptions
+        undefined, // providerOptions
         undefined // retryConfig
       );
     });
 
-    it('should pass anthropicOptions to AnthropicClient', () => {
-      const anthropicOptions = { maxTokens: 8192 };
+    it('should pass providerOptions to AnthropicClient', () => {
+      const providerOptions = { maxTokens: 8192 };
       new LLMClient({
         ...baseOptions,
         provider: 'anthropic',
-        anthropicOptions,
+        providerOptions,
       });
 
       expect(AnthropicClient).toHaveBeenCalledWith(
         'test-key',
         'https://api.example.com',
         'test-model',
-        anthropicOptions,
+        providerOptions,
         undefined
       );
     });
 
-    it('should pass openaiOptions to OpenAIClient', () => {
-      const openaiOptions = { maxOutputTokens: 8192 };
+    it('should pass providerOptions to OpenAIClient', () => {
+      const providerOptions = { maxOutputTokens: 8192 };
       new LLMClient({
         ...baseOptions,
         provider: 'openai',
-        openaiOptions,
+        providerOptions,
       });
 
       expect(OpenAIClient).toHaveBeenCalledWith(
         'test-key',
         'https://api.example.com',
         'test-model',
-        openaiOptions,
+        providerOptions,
+        undefined
+      );
+    });
+
+    it('should create OpenAIChatClient when provider is openai-chat', () => {
+      const wrapper = new LLMClient({
+        ...baseOptions,
+        provider: 'openai-chat',
+      });
+
+      expect(wrapper.provider).toBe('openai-chat');
+      expect(OpenAIChatClient).toHaveBeenCalledWith(
+        'test-key',
+        'https://api.example.com',
+        'test-model',
+        undefined, // providerOptions
+        undefined // retryConfig
+      );
+    });
+
+    it('should pass providerOptions to OpenAIChatClient', () => {
+      const providerOptions = { maxTokens: 4096, temperature: 0.5 };
+      new LLMClient({
+        ...baseOptions,
+        provider: 'openai-chat',
+        providerOptions,
+      });
+
+      expect(OpenAIChatClient).toHaveBeenCalledWith(
+        'test-key',
+        'https://api.example.com',
+        'test-model',
+        providerOptions,
         undefined
       );
     });
@@ -140,10 +187,10 @@ describe('LLMClient', () => {
       }).toThrow('Unsupported LLM provider: unsupported');
     });
 
-    it('should store apiBase and model as readonly properties', () => {
+    it('should store apiBaseURL and model as readonly properties', () => {
       const wrapper = new LLMClient(baseOptions);
 
-      expect(wrapper.apiBase).toBe('https://api.example.com');
+      expect(wrapper.apiBaseURL).toBe('https://api.example.com');
       expect(wrapper.model).toBe('test-model');
     });
   });
@@ -171,6 +218,18 @@ describe('LLMClient', () => {
       const response = await wrapper.generate(messages);
 
       expect(response.content).toBe('openai response');
+    });
+
+    it('should delegate to OpenAIChatClient.generate', async () => {
+      const wrapper = new LLMClient({
+        ...baseOptions,
+        provider: 'openai-chat',
+      });
+
+      const messages: Message[] = [{ role: 'user', content: 'Hello' }];
+      const response = await wrapper.generate(messages);
+
+      expect(response.content).toBe('openai-chat response');
     });
 
     it('should pass tools to underlying client', async () => {

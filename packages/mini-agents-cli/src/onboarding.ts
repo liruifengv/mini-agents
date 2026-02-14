@@ -18,13 +18,13 @@ const BOLD = '\x1b[1m';
 const RESET = '\x1b[0m';
 
 /** Provider 预设 */
-const PROVIDER_PRESETS: Record<string, { apiBase: string; model: string }> = {
+const PROVIDER_PRESETS: Record<string, { apiBaseURL: string; model: string }> = {
   anthropic: {
-    apiBase: 'https://api.anthropic.com',
+    apiBaseURL: 'https://api.anthropic.com',
     model: 'claude-sonnet-4-20250514',
   },
   openai: {
-    apiBase: 'https://api.openai.com/v1',
+    apiBaseURL: 'https://api.openai.com/v1',
     model: 'gpt-4o',
   },
 };
@@ -63,9 +63,9 @@ export async function runOnboarding(): Promise<string> {
 
     // 3. API Base URL
     console.log(`${BOLD}${YELLOW}[3/4] API Base URL${RESET}`);
-    const apiBaseInput = await rl.question(`${DIM}URL (default: ${preset.apiBase}): ${RESET}`);
-    const apiBase = apiBaseInput.trim() || preset.apiBase;
-    console.log(`  → ${CYAN}${apiBase}${RESET}`);
+    const apiBaseURLInput = await rl.question(`${DIM}URL (default: ${preset.apiBaseURL}): ${RESET}`);
+    const apiBaseURL = apiBaseURLInput.trim() || preset.apiBaseURL;
+    console.log(`  → ${CYAN}${apiBaseURL}${RESET}`);
     console.log();
 
     // 4. Model
@@ -83,7 +83,7 @@ export async function runOnboarding(): Promise<string> {
     const settings = {
       llm: {
         apiKey: apiKey.trim() || 'YOUR_API_KEY_HERE',
-        apiBase,
+        apiBaseURL,
         model,
         provider,
       },

@@ -26,7 +26,7 @@ const RetryConfigSchema = z.object({
 /** LLM 配置 schema */
 const LLMConfigSchema = z.object({
   apiKey: z.string(),
-  apiBase: z.string(),
+  apiBaseURL: z.string(),
   model: z.string(),
   provider: z.enum(['anthropic', 'openai']),
   retry: z.unknown().default({}).pipe(RetryConfigSchema),
@@ -92,7 +92,7 @@ const LOCAL_SETTINGS_FILE = 'settings.json';
 const DEFAULT_SETTINGS = {
   llm: {
     apiKey: 'YOUR_API_KEY_HERE',
-    apiBase: 'https://api.anthropic.com',
+    apiBaseURL: 'https://api.anthropic.com',
     model: 'claude-sonnet-4-20250514',
     provider: 'anthropic',
   },

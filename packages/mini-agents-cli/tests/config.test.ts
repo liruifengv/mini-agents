@@ -30,7 +30,7 @@ describe('Config', () => {
       const data = {
         llm: {
           apiKey: 'sk-test',
-          apiBase: 'https://api.example.com',
+          apiBaseURL: 'https://api.example.com',
           model: 'test-model',
           provider: 'anthropic',
         },
@@ -48,7 +48,7 @@ describe('Config', () => {
       const data = {
         llm: {
           apiKey: 'sk-test',
-          apiBase: 'https://api.example.com',
+          apiBaseURL: 'https://api.example.com',
           model: 'test-model',
           provider: 'openai',
         },
@@ -77,7 +77,7 @@ describe('Config', () => {
       const data = {
         llm: {
           apiKey: 'sk-test',
-          apiBase: 'https://api.example.com',
+          apiBaseURL: 'https://api.example.com',
           model: 'test-model',
           provider: 'anthropic',
           retry: { maxRetries: 5 },
@@ -102,7 +102,7 @@ describe('Config', () => {
     it('should reject missing llm.apiKey', () => {
       const result = SettingsSchema.safeParse({
         llm: {
-          apiBase: 'https://api.example.com',
+          apiBaseURL: 'https://api.example.com',
           model: 'test-model',
           provider: 'anthropic',
         },
@@ -114,7 +114,7 @@ describe('Config', () => {
       const result = SettingsSchema.safeParse({
         llm: {
           apiKey: 'sk-test',
-          apiBase: 'https://api.example.com',
+          apiBaseURL: 'https://api.example.com',
           model: 'test-model',
           provider: 'invalid',
         },
@@ -128,7 +128,7 @@ describe('Config', () => {
       const filePath = writeSettingFile('valid.json', {
         llm: {
           apiKey: 'sk-test',
-          apiBase: 'https://api.example.com',
+          apiBaseURL: 'https://api.example.com',
           model: 'test-model',
           provider: 'anthropic',
         },

@@ -52,7 +52,7 @@ export class SimpleCLI {
     const llmClient = new LLMClient({
       apiKey: this.settings.llm.apiKey,
       provider: this.settings.llm.provider,
-      apiBase: this.settings.llm.apiBase,
+      apiBaseURL: this.settings.llm.apiBaseURL,
       model: this.settings.llm.model,
     });
 

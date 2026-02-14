@@ -11,6 +11,8 @@ import type { RetryConfig } from '../types/retry';
 import type { AnthropicClientOptions } from './anthropic-client';
 import { AnthropicClient } from './anthropic-client';
 import type { LLMClientBase, RetryCallback } from './base';
+import type { OpenAIChatClientOptions } from './openai-chat-client';
+import { OpenAIChatClient } from './openai-chat-client';
 import type { OpenAIClientOptions } from './openai-client';
 import { OpenAIClient } from './openai-client';
 
@@ -23,15 +25,13 @@ export interface LLMClientOptions {
   /** LLM 提供商 */
   provider: LLMProvider;
   /** API 基础 URL */
-  apiBase: string;
+  apiBaseURL: string;
   /** 模型名称 */
   model: string;
   /** 重试配置（可选） */
   retryConfig?: RetryConfig;
-  /** Anthropic 客户端特定选项（可选） */
-  anthropicOptions?: AnthropicClientOptions;
-  /** OpenAI 客户端特定选项（可选） */
-  openaiOptions?: OpenAIClientOptions;
+  /** Provider 特定选项（可选） */
+  providerOptions?: AnthropicClientOptions | OpenAIClientOptions | OpenAIChatClientOptions;
 }
 
 /**
@@ -45,7 +45,7 @@ export interface LLMClientOptions {
  * const client = new LLMClient({
  *   apiKey: 'sk-xxx',
  *   provider: 'anthropic',
- *   apiBase: 'https://api.anthropic.com',
+ *   apiBaseURL: 'https://api.anthropic.com',
  *   model: 'claude-sonnet-4-20250514',
  * });
  * const response = await client.generate(messages, tools);
@@ -55,7 +55,7 @@ export class LLMClient {
   /** 当前使用的提供商 */
   readonly provider: LLMProvider;
   /** API 基础 URL */
-  readonly apiBase: string;
+  readonly apiBaseURL: string;
   /** 模型名称 */
   readonly model: string;
 
@@ -63,20 +63,29 @@ export class LLMClient {
   private _client: LLMClientBase;
 
   constructor(options: LLMClientOptions) {
-    const { apiKey, provider, apiBase, model, retryConfig, anthropicOptions, openaiOptions } =
-      options;
+    const {
+      apiKey,
+      provider,
+      apiBaseURL,
+      model,
+      retryConfig,
+      providerOptions,
+    } = options;
 
     this.provider = provider;
-    this.apiBase = apiBase;
+    this.apiBaseURL = apiBaseURL;
     this.model = model;
 
     // 根据 provider 实例化对应的客户端
     switch (provider) {
       case 'anthropic':
-        this._client = new AnthropicClient(apiKey, apiBase, model, anthropicOptions, retryConfig);
+        this._client = new AnthropicClient(apiKey, apiBaseURL, model, providerOptions as AnthropicClientOptions, retryConfig);
         break;
       case 'openai':
-        this._client = new OpenAIClient(apiKey, apiBase, model, openaiOptions, retryConfig);
+        this._client = new OpenAIClient(apiKey, apiBaseURL, model, providerOptions as OpenAIClientOptions, retryConfig);
+        break;
+      case 'openai-chat':
+        this._client = new OpenAIChatClient(apiKey, apiBaseURL, model, providerOptions as OpenAIChatClientOptions, retryConfig);
         break;
       default:
         throw new Error(`Unsupported LLM provider: ${provider as string}`);

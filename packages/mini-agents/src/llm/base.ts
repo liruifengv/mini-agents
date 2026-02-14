@@ -19,16 +19,16 @@ export type RetryCallback = (error: Error, attempt: number) => void;
  */
 export abstract class LLMClientBase implements ILLMClient {
   protected apiKey: string;
-  protected apiBaseUrl: string;
+  protected apiBaseURL: string;
   protected model: string;
   protected retryConfig: RetryConfig;
 
   /** 重试回调，用于跟踪重试次数 */
   retryCallback: RetryCallback | null = null;
 
-  constructor(apiKey: string, apiBaseUrl: string, model: string, retryConfig?: RetryConfig) {
+  constructor(apiKey: string, apiBaseURL: string, model: string, retryConfig?: RetryConfig) {
     this.apiKey = apiKey;
-    this.apiBaseUrl = apiBaseUrl;
+    this.apiBaseURL = apiBaseURL;
     this.model = model;
     this.retryConfig = retryConfig ?? DEFAULT_RETRY_CONFIG;
   }

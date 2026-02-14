@@ -47,18 +47,18 @@ export class AnthropicClient extends LLMClientBase {
 
   constructor(
     apiKey: string,
-    apiBaseUrl: string,
+    apiBaseURL: string,
     model: string,
     options?: AnthropicClientOptions,
     retryConfig?: RetryConfig
   ) {
-    super(apiKey, apiBaseUrl, model, retryConfig);
+    super(apiKey, apiBaseURL, model, retryConfig);
 
     this.maxTokens = options?.maxTokens ?? 16384;
     this.thinking = options?.thinking ?? { type: 'enabled', budget_tokens: 10000 };
 
     this.client = new Anthropic({
-      baseURL: apiBaseUrl,
+      baseURL: apiBaseURL,
       apiKey: apiKey,
     });
   }
