@@ -1,4 +1,4 @@
-import type { Tool } from '../tools/base';
+import type { Tool } from '../tools';
 
 /**
  * LLM 提供商类型

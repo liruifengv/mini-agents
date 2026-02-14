@@ -4,8 +4,8 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { z } from 'zod';
-import { truncateTextByTokens } from '../utils/token';
-import { tool } from './zod-tool';
+import { truncateTextByTokens } from '../../utils/token';
+import { tool } from '../core/zod-tool';
 
 const MAX_TOKENS = 32000;
 

@@ -2,13 +2,13 @@
  * BashTool 单元测试
  */
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import type { ToolResult } from '../../src/tools/base';
+import type { ToolResult } from '../../src/tools';
 import {
   BackgroundShellManager,
   createBashKillTool,
   createBashOutputTool,
   createBashTool,
-} from '../../src/tools/bash-tool';
+} from '../../src/tools';
 
 /**
  * 从 ToolResult 中提取 content

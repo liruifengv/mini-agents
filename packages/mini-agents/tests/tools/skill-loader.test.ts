@@ -2,8 +2,7 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { SkillLoader } from '../../src/tools/skill-loader';
-import { createGetSkillTool } from '../../src/tools/skill-tool';
+import { SkillLoader, createGetSkillTool } from '../../src/tools';
 
 describe('SkillLoader', () => {
   let tempDir: string;

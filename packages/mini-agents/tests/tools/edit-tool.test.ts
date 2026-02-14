@@ -2,7 +2,7 @@ import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createEditTool } from '../../src/tools/edit-tool';
+import { createEditTool } from '../../src/tools';
 
 describe('EditTool', () => {
   let tempDir: string;

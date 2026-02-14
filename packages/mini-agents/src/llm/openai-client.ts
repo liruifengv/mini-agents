@@ -19,7 +19,7 @@ import type {
   ResponseReasoningItem,
 } from 'openai/resources/responses/responses';
 import type { Reasoning } from 'openai/resources/shared';
-import type { Tool } from '../tools/base';
+import type { Tool } from '../tools';
 import type { LLMResponse, Message, ReasoningItem, TokenUsage, ToolCall } from '../types';
 import type { RetryConfig } from '../types/retry';
 import { asyncRetry } from '../utils/retry';

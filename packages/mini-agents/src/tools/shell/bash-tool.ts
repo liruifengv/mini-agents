@@ -5,7 +5,7 @@
 import { type ChildProcess, spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
-import { tool } from './zod-tool';
+import { tool } from '../core/zod-tool';
 
 /**
  * 后台 Shell 进程数据

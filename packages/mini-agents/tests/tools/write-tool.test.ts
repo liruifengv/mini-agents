@@ -2,7 +2,7 @@ import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createWriteTool } from '../../src/tools/write-tool';
+import { createWriteTool } from '../../src/tools';
 
 describe('WriteTool', () => {
   let tempDir: string;

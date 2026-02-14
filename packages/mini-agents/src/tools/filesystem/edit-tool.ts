@@ -4,7 +4,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { z } from 'zod';
-import { tool } from './zod-tool';
+import { tool } from '../core/zod-tool';
 
 /**
  * 创建 EditTool

@@ -5,7 +5,7 @@
  * 对外暴露统一的 generate 接口。
  */
 
-import type { Tool } from '../tools/base';
+import type { Tool } from '../tools';
 import type { LLMProvider, LLMResponse, Message } from '../types/llm';
 import type { RetryConfig } from '../types/retry';
 import type { AnthropicClientOptions } from './anthropic-client';

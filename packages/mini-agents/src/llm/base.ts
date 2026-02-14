@@ -1,4 +1,4 @@
-import type { Tool } from '../tools/base';
+import type { Tool } from '../tools';
 import type { ILLMClient, LLMResponse, Message } from '../types/llm';
 import type { RetryConfig } from '../types/retry';
 import { DEFAULT_RETRY_CONFIG } from '../types/retry';

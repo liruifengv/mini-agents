@@ -21,8 +21,19 @@
  */
 
 import { Agent, AnthropicClient, OpenAIChatClient, OpenAIClient } from 'mini-agents';
-import { getWeatherTool } from 'mini-agents/tools';
+import { tool } from 'mini-agents/tools';
 import type { Message } from 'mini-agents/types';
+import { z } from 'zod';
+
+// 示例用的天气工具（内联定义）
+const getWeatherTool = tool({
+  name: 'get_weather',
+  description: 'Get the weather for a given city',
+  parameters: z.object({ city: z.string() }),
+  async execute({ city }) {
+    return `The weather in ${city} is rain.`;
+  },
+});
 
 // ============================================================
 // Anthropic Client

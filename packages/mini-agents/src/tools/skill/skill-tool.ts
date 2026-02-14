@@ -5,9 +5,9 @@
  */
 
 import { z } from 'zod';
-import type { Tool } from './base';
+import type { Tool } from '../core/base';
 import type { SkillLoader } from './skill-loader';
-import { tool } from './zod-tool';
+import { tool } from '../core/zod-tool';
 
 /**
  * 创建 get_skill 工具
