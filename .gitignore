@@ -100,3 +100,5 @@ public
 tmp/
 temp/
 settings.json
+
+dev_docs/
