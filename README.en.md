@@ -53,7 +53,6 @@ mini-agents/
 │       └── config/           # Configuration templates
 │
 └── examples/                 # Example code
-    └── basic-examples/
 ```
 
 ## Quick Start

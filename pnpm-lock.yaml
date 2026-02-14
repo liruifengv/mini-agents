@@ -27,11 +27,11 @@ importers:
         specifier: ^4.0.18
         version: 4.0.18(@types/node@20.19.33)(tsx@4.21.0)
 
-  examples/basic-examples:
+  examples:
     dependencies:
       mini-agents:
         specifier: workspace:*
-        version: link:../../packages/mini-agents
+        version: link:../packages/mini-agents
     devDependencies:
       '@types/node':
         specifier: ^20.0.0

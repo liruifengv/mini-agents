@@ -1,11 +1,11 @@
 {
-  "name": "mini-agents-basic-examples",
+  "name": "mini-agents-examples",
   "version": "1.0.0",
   "private": true,
   "description": "A mini AI agent in CLI",
   "type": "module",
   "scripts": {
-    "dev": "tsx --env-file=../../.env 03_provider_selection.ts"
+    "dev": "tsx --env-file=../.env 03_provider_selection.ts"
   },
   "keywords": [
     "ai",

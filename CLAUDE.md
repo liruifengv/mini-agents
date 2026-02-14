@@ -28,7 +28,7 @@
 - 按计划逐步实现
 
 ### 第五步：新增示例
-- 按照 Python 版本的格式，在 `examples/basic-examples/` 目录下更新对应示例
+- 按照 Python 版本的格式，在 `examples/` 目录下更新对应示例
 - 示例文件命名：`01_basic_tools.ts`, `02_simple_agent.ts` 等（序号 + 下划线 + 功能名）
 - 格式规范：
   - 文件顶部有 JSDoc 注释说明示例内容

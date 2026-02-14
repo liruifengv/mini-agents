@@ -53,7 +53,6 @@ mini-agents/
 │       └── config/           # 配置模板
 │
 └── examples/                 # 示例代码
-    └── basic-examples/
 ```
 
 ## 快速开始
