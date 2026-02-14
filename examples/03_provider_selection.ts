@@ -35,6 +35,7 @@ const getWeatherTool = tool({
     return `The weather in ${city} is rain.`;
   },
 });
+
 import { RetryExhaustedError } from 'mini-agents/utils';
 
 // ============================================================

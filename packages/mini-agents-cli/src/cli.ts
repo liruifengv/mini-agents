@@ -47,7 +47,6 @@ export class SimpleCLI {
     this.agent = this.createAgent();
   }
 
-  // biome-ignore lint/correctness/noUnusedPrivateClassMembers: called in constructor
   private createAgent(): Agent {
     const llmClient = new LLMClient({
       apiKey: this.settings.llm.apiKey,

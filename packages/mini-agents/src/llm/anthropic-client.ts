@@ -40,9 +40,7 @@ export interface AnthropicClientOptions {
 
 export class AnthropicClient extends LLMClientBase {
   private client: Anthropic;
-  // biome-ignore lint/correctness/noUnusedPrivateClassMembers: used in _makeApiRequest via asyncRetry
   private maxTokens: number;
-  // biome-ignore lint/correctness/noUnusedPrivateClassMembers: used in _makeApiRequest via asyncRetry
   private thinking: ThinkingConfigParam;
 
   constructor(

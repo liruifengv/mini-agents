@@ -26,7 +26,6 @@ export interface BackgroundShell {
  */
 // biome-ignore lint/complexity/noStaticOnlyClass: intentionally using static-only class for singleton pattern
 export class BackgroundShellManager {
-  // biome-ignore lint/correctness/noUnusedPrivateClassMembers: accessed via BackgroundShellManager.shells in static methods
   private static shells: Map<string, BackgroundShell> = new Map();
 
   /**

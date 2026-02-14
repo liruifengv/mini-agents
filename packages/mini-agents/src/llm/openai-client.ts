@@ -49,7 +49,6 @@ export interface OpenAIClientOptions {
 
 export class OpenAIClient extends LLMClientBase {
   private client: OpenAI;
-  // biome-ignore lint/correctness/noUnusedPrivateClassMembers: initialized but used via getter
   private maxOutputTokens: number;
   private reasoning: Reasoning | null;
   private store: boolean | undefined;

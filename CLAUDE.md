@@ -52,6 +52,11 @@
 
 ## 实现规范
 
+### 提交前检查
+- **每次 git commit 之前，必须先运行 `pnpm check` 确保代码格式和 lint 通过**
+- 如果 check 失败，先运行 `pnpm biome check --fix .` 自动修复，再手动处理剩余问题
+- 确认 check 通过后再提交
+
 ### 通用规范
 - 代码风格：遵循 TypeScript 社区的最佳实践
 - 注释：每个函数和类都要有清晰的注释说明
@@ -102,7 +107,7 @@ export function createXxxTool(workspaceDir: string) {
 3. 返回值：成功返回 `string`，失败返回 `ToolResult` 对象
 4. 路径处理：支持相对路径（基于 workspaceDir）和绝对路径
 
-**参考实现**：`packages/mini-agents/src/tools/read-tool.ts`
+**参考实现**：`packages/mini-agents/src/tools/filesystem/read-tool.ts`
 
 ### 单元测试规范
 
