@@ -63,14 +63,7 @@ export class LLMClient {
   private _client: LLMClientBase;
 
   constructor(options: LLMClientOptions) {
-    const {
-      apiKey,
-      provider,
-      apiBaseURL,
-      model,
-      retryConfig,
-      providerOptions,
-    } = options;
+    const { apiKey, provider, apiBaseURL, model, retryConfig, providerOptions } = options;
 
     this.provider = provider;
     this.apiBaseURL = apiBaseURL;
@@ -79,13 +72,31 @@ export class LLMClient {
     // 根据 provider 实例化对应的客户端
     switch (provider) {
       case 'anthropic':
-        this._client = new AnthropicClient(apiKey, apiBaseURL, model, providerOptions as AnthropicClientOptions, retryConfig);
+        this._client = new AnthropicClient(
+          apiKey,
+          apiBaseURL,
+          model,
+          providerOptions as AnthropicClientOptions,
+          retryConfig
+        );
         break;
       case 'openai':
-        this._client = new OpenAIClient(apiKey, apiBaseURL, model, providerOptions as OpenAIClientOptions, retryConfig);
+        this._client = new OpenAIClient(
+          apiKey,
+          apiBaseURL,
+          model,
+          providerOptions as OpenAIClientOptions,
+          retryConfig
+        );
         break;
       case 'openai-chat':
-        this._client = new OpenAIChatClient(apiKey, apiBaseURL, model, providerOptions as OpenAIChatClientOptions, retryConfig);
+        this._client = new OpenAIChatClient(
+          apiKey,
+          apiBaseURL,
+          model,
+          providerOptions as OpenAIChatClientOptions,
+          retryConfig
+        );
         break;
       default:
         throw new Error(`Unsupported LLM provider: ${provider as string}`);

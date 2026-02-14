@@ -146,7 +146,9 @@ const testAgentWithAnthropic = async () => {
           console.log(`[Thinking] ${event.content}`);
           break;
         case 'toolCall':
-          console.log(`[Tool Call] ${event.toolCall.function.name}(${JSON.stringify(event.toolCall.function.arguments)})`);
+          console.log(
+            `[Tool Call] ${event.toolCall.function.name}(${JSON.stringify(event.toolCall.function.arguments)})`
+          );
           break;
         case 'toolResult':
           console.log(`[Tool Result] ${event.result.content}`);
@@ -194,7 +196,9 @@ const testAgentWithOpenAI = async () => {
           console.log(`[Thinking] ${event.content}`);
           break;
         case 'toolCall':
-          console.log(`[Tool Call] ${event.toolCall.function.name}(${JSON.stringify(event.toolCall.function.arguments)})`);
+          console.log(
+            `[Tool Call] ${event.toolCall.function.name}(${JSON.stringify(event.toolCall.function.arguments)})`
+          );
           break;
         case 'toolResult':
           console.log(`[Tool Result] ${event.result.content}`);
@@ -241,7 +245,9 @@ const testAgentWithOpenAIChat = async () => {
           console.log(`[Thinking] ${event.content}`);
           break;
         case 'toolCall':
-          console.log(`[Tool Call] ${event.toolCall.function.name}(${JSON.stringify(event.toolCall.function.arguments)})`);
+          console.log(
+            `[Tool Call] ${event.toolCall.function.name}(${JSON.stringify(event.toolCall.function.arguments)})`
+          );
           break;
         case 'toolResult':
           console.log(`[Tool Result] ${event.result.content}`);

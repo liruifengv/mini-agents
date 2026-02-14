@@ -63,7 +63,9 @@ export async function runOnboarding(): Promise<string> {
 
     // 3. API Base URL
     console.log(`${BOLD}${YELLOW}[3/4] API Base URL${RESET}`);
-    const apiBaseURLInput = await rl.question(`${DIM}URL (default: ${preset.apiBaseURL}): ${RESET}`);
+    const apiBaseURLInput = await rl.question(
+      `${DIM}URL (default: ${preset.apiBaseURL}): ${RESET}`
+    );
     const apiBaseURL = apiBaseURLInput.trim() || preset.apiBaseURL;
     console.log(`  → ${CYAN}${apiBaseURL}${RESET}`);
     console.log();

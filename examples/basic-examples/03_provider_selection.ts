@@ -199,7 +199,9 @@ const demoAgentWithAnthropic = async () => {
           console.log(`[Thinking] ${event.content}`);
           break;
         case 'toolCall':
-          console.log(`[Tool Call] ${event.toolCall.function.name}(${JSON.stringify(event.toolCall.function.arguments)})`);
+          console.log(
+            `[Tool Call] ${event.toolCall.function.name}(${JSON.stringify(event.toolCall.function.arguments)})`
+          );
           break;
         case 'toolResult':
           console.log(`[Tool Result] ${event.result.content}`);
@@ -233,7 +235,7 @@ const demoAgentWithOpenAI = async () => {
     apiKey,
     provider: 'openai',
     apiBaseURL,
-    model
+    model,
   });
 
   const systemPrompt = 'You are a helpful assistant.';
@@ -247,7 +249,9 @@ const demoAgentWithOpenAI = async () => {
           console.log(`[Thinking] ${event.content}`);
           break;
         case 'toolCall':
-          console.log(`[Tool Call] ${event.toolCall.function.name}(${JSON.stringify(event.toolCall.function.arguments)})`);
+          console.log(
+            `[Tool Call] ${event.toolCall.function.name}(${JSON.stringify(event.toolCall.function.arguments)})`
+          );
           break;
         case 'toolResult':
           console.log(`[Tool Result] ${event.result.content}`);
@@ -296,7 +300,9 @@ const demoAgentWithOpenAIChat = async () => {
           console.log(`[Thinking] ${event.content}`);
           break;
         case 'toolCall':
-          console.log(`[Tool Call] ${event.toolCall.function.name}(${JSON.stringify(event.toolCall.function.arguments)})`);
+          console.log(
+            `[Tool Call] ${event.toolCall.function.name}(${JSON.stringify(event.toolCall.function.arguments)})`
+          );
           break;
         case 'toolResult':
           console.log(`[Tool Result] ${event.result.content}`);
