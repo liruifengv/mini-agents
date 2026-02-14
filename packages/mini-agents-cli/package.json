@@ -1,6 +1,6 @@
 {
   "name": "mini-agents-cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A mini AI agent in CLI",
   "main": "dist/index.mjs",
   "bin": {
