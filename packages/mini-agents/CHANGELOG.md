@@ -1,5 +1,11 @@
 # mini-agents
 
+## 0.0.4
+
+### Patch Changes
+
+- 4ed1cd0: refactor: improve summarizer with tiered compression, batch summary, and rolling summary merge
+
 ## 0.0.3
 
 ### Patch Changes

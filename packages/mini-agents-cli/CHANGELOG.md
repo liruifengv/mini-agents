@@ -1,5 +1,12 @@
 # mini-agents-cli
 
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies [4ed1cd0]
+  - mini-agents@0.0.4
+
 ## 0.0.3
 
 ### Patch Changes
