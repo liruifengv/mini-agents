@@ -2,6 +2,12 @@ import type { ILLMClient, Message } from '../types/llm';
 import { countTokens } from '../utils/token';
 import type { AgentMessageEvent } from './types';
 
+/** 保留最近 N 轮不压缩 */
+const RETAINED_ROUNDS = 3;
+
+/** 摘要消息的标识前缀 */
+const SUMMARY_PREFIX = '[Context Summary]';
+
 /**
  * 估算消息列表的总 token 数
  */
@@ -30,6 +36,12 @@ export function estimateTokens(messages: Message[]): number {
 
 /**
  * 检查是否需要摘要，如果需要则执行消息压缩
+ *
+ * 新算法：分级压缩 + 单次批量摘要 + 合并更新
+ * - 按 user 消息分轮
+ * - 保留最近 RETAINED_ROUNDS 轮原始消息
+ * - 将更早轮次（含旧摘要）合并为一次 LLM 调用生成一条 user 角色摘要
+ * - 多次触发时，旧摘要参与新摘要生成，始终只保持一条摘要消息
  *
  * @param params.messages - 当前消息列表
  * @param params.tokenLimit - token 阈值
@@ -68,41 +80,91 @@ export async function summarizeMessages(params: {
 
   const beforeTokens = estimatedTokens;
 
-  // 找到所有 user 消息的索引（跳过 system 消息）
-  const userIndices: number[] = [];
+  // 按 user 消息分轮（跳过 system 消息）
+  // 每轮 = 一个 user 消息 + 其后所有非 user 消息（assistant、tool 等）
+  const rounds: { startIndex: number; endIndex: number }[] = [];
   for (let i = 1; i < messages.length; i++) {
     if (messages[i].role === 'user') {
-      userIndices.push(i);
+      rounds.push({ startIndex: i, endIndex: -1 });
     }
   }
 
-  if (userIndices.length === 0) {
+  // 无 user 消息，跳过压缩
+  if (rounds.length === 0) {
     return { event: null, messages, skipNextTokenCheck };
   }
 
-  // 重组消息：保留 system + 每个 user 消息 + 对应执行过程的摘要
-  const newMessages: Message[] = [messages[0]]; // system 消息
-
-  for (let u = 0; u < userIndices.length; u++) {
-    const userIdx = userIndices[u];
-    const nextUserIdx = u + 1 < userIndices.length ? userIndices[u + 1] : messages.length;
-
-    // 保留 user 消息
-    newMessages.push(messages[userIdx]);
-
-    // 提取该轮的 assistant + tool 消息
-    const executionMessages = messages.slice(userIdx + 1, nextUserIdx);
-    if (executionMessages.length === 0) {
-      continue;
-    }
-
-    // 生成摘要
-    const summary = await createSummary(llmClient, executionMessages, u + 1);
-    newMessages.push({
-      role: 'user',
-      content: `[Assistant Execution Summary]\n\n${summary}`,
-    });
+  // 设置每轮的结束索引
+  for (let r = 0; r < rounds.length; r++) {
+    rounds[r].endIndex = r + 1 < rounds.length ? rounds[r + 1].startIndex : messages.length;
   }
+
+  // 轮次不足 RETAINED_ROUNDS，无需压缩
+  if (rounds.length <= RETAINED_ROUNDS) {
+    return { event: null, messages, skipNextTokenCheck: false };
+  }
+
+  // 分区：需压缩的轮次 和 保留的轮次
+  const compressCount = rounds.length - RETAINED_ROUNDS;
+  const retainStartIndex = rounds[compressCount].startIndex;
+
+  // 检测旧摘要：扫描 messages 中是否存在 system 角色且以 SUMMARY_PREFIX 开头的消息
+  let existingSummary: string | null = null;
+  const messagesToCompress: Message[] = [];
+
+  for (let r = 0; r < compressCount; r++) {
+    const roundMessages = messages.slice(rounds[r].startIndex, rounds[r].endIndex);
+    for (const msg of roundMessages) {
+      // 检测旧摘要消息
+      if (
+        msg.role === 'user' &&
+        typeof msg.content === 'string' &&
+        msg.content.startsWith(SUMMARY_PREFIX)
+      ) {
+        // 提取旧摘要内容（去掉前缀和换行）
+        existingSummary = msg.content.slice(SUMMARY_PREFIX.length).trim();
+        continue; // 不将旧摘要消息加入待压缩消息列表
+      }
+      messagesToCompress.push(msg);
+    }
+  }
+
+  // 同时检查 system prompt 之后、第一个 user 之前是否有旧摘要（第二次压缩后摘要在 index 1）
+  if (messages.length > 1 && rounds[0].startIndex > 1) {
+    for (let i = 1; i < rounds[0].startIndex; i++) {
+      const msg = messages[i];
+      if (
+        msg.role === 'user' &&
+        typeof msg.content === 'string' &&
+        msg.content.startsWith(SUMMARY_PREFIX)
+      ) {
+        existingSummary = msg.content.slice(SUMMARY_PREFIX.length).trim();
+      }
+    }
+  }
+
+  // 仅有旧摘要无新轮次消息，跳过压缩
+  if (messagesToCompress.length === 0) {
+    return { event: null, messages, skipNextTokenCheck: false };
+  }
+
+  // 调用 createBatchSummary 生成新摘要
+  const summaryText = await createBatchSummary(llmClient, messagesToCompress, existingSummary);
+
+  // 降级处理：LLM 失败或返回空摘要时，保留原始消息
+  if (!summaryText) {
+    return { event: null, messages, skipNextTokenCheck: true };
+  }
+
+  // 组装新消息列表：system_prompt + 摘要(user) + 保留的最近 N 轮原始消息
+  const newMessages: Message[] = [
+    messages[0], // 原始 system prompt
+    {
+      role: 'user',
+      content: `${SUMMARY_PREFIX}\n\nThe following is a summary of our previous conversation, not a new user request.\n\n${summaryText}`,
+    },
+    ...messages.slice(retainStartIndex),
+  ];
 
   const afterTokens = estimateTokens(newMessages);
   return {
@@ -113,55 +175,76 @@ export async function summarizeMessages(params: {
 }
 
 /**
- * 调用 LLM 生成单轮执行过程的摘要（模块私有）
- * 失败时降级为简单文本拼接
+ * 批量生成摘要：将所有需压缩的消息合并为一次 LLM 调用
+ *
+ * @param llmClient - LLM 客户端
+ * @param messagesToCompress - 需要压缩的消息列表
+ * @param existingSummary - 旧摘要文本（如有）
+ * @returns 摘要文本，失败时返回 null
  */
-async function createSummary(
+async function createBatchSummary(
   llmClient: ILLMClient,
-  executionMessages: Message[],
-  roundNum: number
-): Promise<string> {
-  // 构建执行过程描述
-  let summaryContent = `Round ${roundNum} execution process:\n\n`;
-  for (const msg of executionMessages) {
-    if (msg.role === 'assistant') {
+  messagesToCompress: Message[],
+  existingSummary: string | null
+): Promise<string | null> {
+  // 构建待压缩内容文本
+  let compressContent = '';
+
+  // 如果存在旧摘要，作为上下文附加在前面
+  if (existingSummary) {
+    compressContent += `## Previous Context Summary\n${existingSummary}\n\n`;
+  }
+
+  // 遍历待压缩消息，按角色格式化
+  for (const msg of messagesToCompress) {
+    if (msg.role === 'user') {
+      const content = typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content);
+      compressContent += `## User\n${content}\n\n`;
+    } else if (msg.role === 'assistant') {
+      // 跳过 thinking 内容（参考 kimi-cli 的 ThinkPart 过滤设计）
       if (typeof msg.content === 'string' && msg.content) {
-        summaryContent += `Assistant: ${msg.content}\n`;
+        compressContent += `## Assistant\n${msg.content}\n`;
       }
       if (msg.toolCalls) {
         const toolNames = msg.toolCalls.map((tc) => tc.function.name).join(', ');
-        summaryContent += `Tools called: ${toolNames}\n`;
+        compressContent += `Tools called: ${toolNames}\n`;
       }
+      compressContent += '\n';
     } else if (msg.role === 'tool') {
       const content = typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content);
       // 截断过长的工具结果
       const truncated = content.length > 500 ? `${content.slice(0, 500)}...` : content;
-      summaryContent += `Tool result (${msg.name || 'unknown'}): ${truncated}\n`;
+      compressContent += `## Tool Result (${msg.name || 'unknown'})\n${truncated}\n\n`;
     }
   }
 
-  // 摘要提示词
-  const summarizePrompt =
-    `Please provide a concise summary of the following Agent execution process:\n\n` +
-    `${summaryContent}\n\n` +
-    `Requirements:\n` +
-    `1. Focus on what tasks were completed and which tools were called\n` +
-    `2. Keep key execution results and important findings\n` +
-    `3. Be concise and clear, within 1000 words\n` +
-    `4. Use English\n` +
-    `5. Do not include "user" related content, only summarize the Agent's execution process`;
+  // 摘要 system prompt
+  const summarizeSystemPrompt =
+    'You are an assistant that summarizes conversation context.\n' +
+    'Summarize the following conversation history into a concise context summary.\n\n' +
+    'Requirements:\n' +
+    '1. Focus on what goals the user is working towards\n' +
+    '2. Keep key results, important findings, and file paths\n' +
+    '3. Note which tools were called and their outcomes\n' +
+    '4. Preserve any unfinished tasks or pending issues\n' +
+    '5. Be concise but comprehensive, within 2000 words\n' +
+    '6. Use English\n' +
+    '7. If a previous summary is included, integrate it into the new summary';
 
   try {
     const response = await llmClient.generate([
-      {
-        role: 'system',
-        content: 'You are an assistant skilled at summarizing Agent execution processes.',
-      },
-      { role: 'user', content: summarizePrompt },
+      { role: 'system', content: summarizeSystemPrompt },
+      { role: 'user', content: compressContent },
     ]);
-    return response.content || summaryContent;
+
+    // 空摘要视为失败
+    if (!response.content || response.content.trim() === '') {
+      return null;
+    }
+
+    return response.content;
   } catch {
-    // 降级：直接返回执行过程文本
-    return summaryContent;
+    // LLM 失败时返回 null，由调用方决定降级策略
+    return null;
   }
 }
