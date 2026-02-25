@@ -1,5 +1,15 @@
 # mini-agents-cli
 
+## 0.0.5
+
+### Patch Changes
+
+- 3da2f3c: Add memory support via MEMORY.md
+
+  - Add `memory.ts` module for managing `~/.mini-agents-cli/MEMORY.md`
+  - Inject memory management instructions into system prompt
+  - Agent can now read and update memory file across sessions
+
 ## 0.0.4
 
 ### Patch Changes
