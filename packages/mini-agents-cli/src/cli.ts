@@ -19,6 +19,7 @@ import {
 } from 'mini-agents/tools';
 import type { Settings } from './config';
 import { findConfigFile } from './config';
+import { getMemoryInstructions } from './memory';
 
 // ANSI 颜色
 const colors = {
@@ -103,6 +104,9 @@ export class SimpleCLI {
         `All relative paths will be resolved relative to this directory.`;
     }
 
+    // 注入记忆管理指令
+    systemPrompt += `\n\n${getMemoryInstructions()}`;
+
     return new Agent(llmClient, systemPrompt, tools);
   }
 
@@ -120,7 +124,6 @@ export class SimpleCLI {
     return [
       this.settings.tools.enableFileTools,
       this.settings.tools.enableBash,
-      this.settings.tools.enableNote,
       this.settings.tools.enableSkills,
       this.settings.tools.enableMcp,
     ].filter(Boolean).length;

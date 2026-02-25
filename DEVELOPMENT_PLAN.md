@@ -252,15 +252,15 @@
   - [x] 4.2 交互式提示
   - [x] 4.3 Session 命令
   - [x] 4.4 颜色输出
-- [ ] **阶段 5：Agent 核心增强**
+- [x] **阶段 5：Agent 核心增强**
   - [x] 5.1 取消机制
   - [x] 5.2 自动摘要
-  - [ ] 5.3 Agent Logger
+  - [ ] 5.3 Agent Logger (skipped - using memory instead)
 - [ ] **阶段 6：MCP 支持**
   - [ ] 6.1 MCP 类型与连接管理
   - [ ] 6.2 MCP 工具加载器
-- [ ] **阶段 7：会话记忆系统**
-  - [ ] 7.1 Note 工具
+- [x] **阶段 7：会话记忆系统**
+  - [x] 7.1 Note 工具 (implemented as self-managed MEMORY.md)
 - [x] **阶段 8：Skill 系统**
   - [x] 8.1 SKILL.md 解析与加载
   - [x] 8.2 GetSkillTool

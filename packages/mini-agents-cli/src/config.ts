@@ -80,7 +80,7 @@ export type MCPConfig = z.infer<typeof MCPConfigSchema>;
 // ============================================================
 
 /** 配置文件目录：~/.mini-agents-cli */
-const CONFIG_DIR = join(homedir(), '.mini-agents-cli');
+export const CONFIG_DIR = join(homedir(), '.mini-agents-cli');
 
 /** 用户配置文件路径：~/.mini-agents-cli/settings.json */
 const USER_SETTINGS_FILE = join(CONFIG_DIR, 'settings.json');
