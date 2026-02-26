@@ -11,8 +11,9 @@
 
 *   ✅ **完整的 Agent 执行循环**：可靠的执行框架，配备文件系统操作和 Shell 执行的基础工具集
 *   ✅ **智能上下文管理**：自动对会话历史进行摘要，支持长任务执行
+*   ✅ **跨会话记忆**：基于 MEMORY.md 的持久化记忆系统，Agent 可跨会话记住用户偏好和项目上下文
 *   ✅ **Skill 系统**：渐进式披露的 Skill 机制，Agent 可按需获取 Skill 详情
-*   ✅ **多 LLM 支持**：同时支持 Anthropic (Claude) 和 OpenAI 的 API
+*   ✅ **多 LLM 支持**：支持 Anthropic (Claude)、OpenAI、OpenAI Chat（兼容 Ollama/vLLM/DeepSeek 等）和 Google Gemini
 *   ✅ **取消机制**：支持随时取消 Agent 执行，并正确清理会话状态
 *   ✅ **模块化设计**：框架与 CLI 分离，可独立使用或扩展
 
@@ -37,8 +38,8 @@ mini-agents/
 │   ├── mini-agents/           # 框架层 - 可独立使用
 │   │   ├── src/
 │   │   │   ├── tools/        # 工具实现 (read/write/edit/bash/skill)
-│   │   │   ├── llm/          # LLM 客户端 (anthropic/openai)
-│   │   │   ├── agent/        # Agent 核心逻辑
+│   │   │   ├── llm/          # LLM 客户端 (anthropic/openai/openai-chat/gemini)
+│   │   │   ├── agent/        # Agent 核心逻辑 (执行循环/取消/摘要)
 │   │   │   ├── types/        # 类型定义
 │   │   │   └── utils/        # 工具函数 (token/retry)
 │   │   └── tests/            # 单元测试
@@ -48,6 +49,7 @@ mini-agents/
 │       │   ├── index.ts      # 入口
 │       │   ├── cli.ts        # CLI 实现
 │       │   ├── config.ts     # 配置管理
+│       │   ├── memory.ts     # 跨会话记忆
 │       │   └── onboarding.ts # 初始化引导
 │       ├── skills/           # 内置 Skills
 │       └── config/           # 配置模板
@@ -81,7 +83,8 @@ npx mini-agents-cli
 # 运行 CLI
 mini-agents-cli
 
-# CLI 首次运行会引导选择供应商并设置 API_KEY，并写入默认配置文件 ~/.mini-agents-cli/setting.json
+# CLI 首次运行会引导选择供应商（Anthropic/OpenAI/OpenAI Chat/Gemini）
+# 并设置 API_KEY，写入默认配置文件 ~/.mini-agents-cli/settings.json
 ```
 
 **CLI 内置命令：**
@@ -227,7 +230,7 @@ export function createMyTool(apiKey: string) {
 
 ### CLI 配置
 
-**配置文件路径**: `~/.mini-agents-cli/setting.json`
+**配置文件路径**: `~/.mini-agents-cli/settings.json`
 
 ```json
 {
@@ -241,6 +244,14 @@ export function createMyTool(apiKey: string) {
     "openai": {
       "apiKey": null,
       "baseUrl": null
+    },
+    "openaiChat": {
+      "apiKey": null,
+      "baseUrl": null
+    },
+    "gemini": {
+      "apiKey": null,
+      "baseUrl": null
     }
   },
   "agent": {
@@ -251,8 +262,8 @@ export function createMyTool(apiKey: string) {
 ```
 
 **配置优先级**:
-1. 环境变量 (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`)
-2. `~/.mini-agents-cli/setting.json`
+1. 环境变量 (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`)
+2. `~/.mini-agents-cli/settings.json`
 3. 内置默认值
 
 ### 框架配置
@@ -260,6 +271,7 @@ export function createMyTool(apiKey: string) {
 框架可以通过代码直接配置，无需配置文件：
 
 ```typescript
+// 支持的 provider: 'anthropic' | 'openai' | 'openai-chat' | 'gemini'
 const llm = new LLMClient({
   provider: 'anthropic',
   model: 'claude-sonnet-4-5-20250929',
@@ -272,6 +284,15 @@ const agent = new Agent(llm, systemPrompt, tools, {
 });
 ```
 
+**支持的 LLM 供应商**:
+
+| Provider | 说明 | 兼容服务 |
+|----------|------|----------|
+| `anthropic` | Anthropic Messages API | Claude |
+| `openai` | OpenAI Responses API | GPT-4o 等 |
+| `openai-chat` | OpenAI Chat Completions API | Ollama, vLLM, DeepSeek, OpenRouter, Groq 等 |
+| `gemini` | Google Gemini API | Gemini Pro/Flash 等 |
+
 ## 工具列表
 
 | 工具 | 描述 | 参数 |
@@ -279,7 +300,9 @@ const agent = new Agent(llm, systemPrompt, tools, {
 | `read` | 读取文件内容 | `file_path`, `offset`, `limit` |
 | `write` | 写入文件 | `file_path`, `content` |
 | `edit` | 编辑文件（字符串替换） | `file_path`, `old_string`, `new_string` |
-| `bash` | 执行 Shell 命令 | `command`, `timeout`, `work_dir` |
+| `bash` | 执行 Shell 命令（前台/后台） | `command`, `timeout`, `work_dir` |
+| `bash_output` | 获取后台命令输出 | `id`, `regex` |
+| `bash_kill` | 终止后台命令 | `id` |
 | `get_skill` | 获取 Skill 详情 | `skill_name` |
 
 ## 本地开发
@@ -347,6 +370,7 @@ pnpm -F mini-agents-cli dev
 - MiniMax-M2: https://github.com/MiniMax-AI/MiniMax-M2
 - Anthropic API: https://docs.anthropic.com/claude/reference
 - OpenAI API: https://platform.openai.com/docs/api-reference
+- Google Gemini API: https://ai.google.dev/docs
 - Claude Skills: https://github.com/anthropics/skills
 
 ---

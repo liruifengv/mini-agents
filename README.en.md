@@ -11,8 +11,9 @@ English | [中文](README.md)
 
 *   ✅ **Complete Agent Execution Loop**: Reliable execution framework with a basic toolset for file system operations and shell execution
 *   ✅ **Smart Context Management**: Automatic summarization of conversation history to support long task execution
+*   ✅ **Cross-Session Memory**: Persistent memory system based on MEMORY.md, allowing the Agent to remember user preferences and project context across sessions
 *   ✅ **Skill System**: Progressive disclosure Skill mechanism, where the Agent can retrieve Skill details on demand
-*   ✅ **Multi-LLM Support**: Supports both Anthropic (Claude) and OpenAI APIs
+*   ✅ **Multi-LLM Support**: Supports Anthropic (Claude), OpenAI, OpenAI Chat (compatible with Ollama/vLLM/DeepSeek, etc.), and Google Gemini
 *   ✅ **Cancellation Mechanism**: Support for canceling Agent execution at any time with proper cleanup of session state
 *   ✅ **Modular Design**: Separation of framework and CLI, allowing independent use or extension
 
@@ -37,8 +38,8 @@ mini-agents/
 │   ├── mini-agents/           # Framework layer - can be used standalone
 │   │   ├── src/
 │   │   │   ├── tools/        # Tool implementations (read/write/edit/bash/skill)
-│   │   │   ├── llm/          # LLM clients (anthropic/openai)
-│   │   │   ├── agent/        # Core Agent logic
+│   │   │   ├── llm/          # LLM clients (anthropic/openai/openai-chat/gemini)
+│   │   │   ├── agent/        # Core Agent logic (execution loop/cancel/summarize)
 │   │   │   ├── types/        # Type definitions
 │   │   │   └── utils/        # Utility functions (token/retry)
 │   │   └── tests/            # Unit tests
@@ -48,6 +49,7 @@ mini-agents/
 │       │   ├── index.ts      # Entry point
 │       │   ├── cli.ts        # CLI implementation
 │       │   ├── config.ts     # Configuration management
+│       │   ├── memory.ts     # Cross-session memory
 │       │   └── onboarding.ts # Initialization guide
 │       ├── skills/           # Built-in Skills
 │       └── config/           # Configuration templates
@@ -82,7 +84,8 @@ npx mini-agents-cli
 # Run CLI
 mini-agents-cli
 
-# The CLI will guide you to select a provider and set API_KEY on first run, and write to the default config file ~/.mini-agents-cli/setting.json
+# The CLI will guide you to select a provider (Anthropic/OpenAI/OpenAI Chat/Gemini)
+# and set API_KEY on first run, writing to the default config file ~/.mini-agents-cli/settings.json
 ```
 
 **CLI Built-in Commands:**
@@ -228,7 +231,7 @@ export function createMyTool(apiKey: string) {
 
 ### CLI Configuration
 
-**Config file path**: `~/.mini-agents-cli/setting.json`
+**Config file path**: `~/.mini-agents-cli/settings.json`
 
 ```json
 {
@@ -242,6 +245,14 @@ export function createMyTool(apiKey: string) {
     "openai": {
       "apiKey": null,
       "baseUrl": null
+    },
+    "openaiChat": {
+      "apiKey": null,
+      "baseUrl": null
+    },
+    "gemini": {
+      "apiKey": null,
+      "baseUrl": null
     }
   },
   "agent": {
@@ -252,8 +263,8 @@ export function createMyTool(apiKey: string) {
 ```
 
 **Configuration Priority**:
-1. Environment variables (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`)
-2. `~/.mini-agents-cli/setting.json`
+1. Environment variables (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`)
+2. `~/.mini-agents-cli/settings.json`
 3. Built-in defaults
 
 ### Framework Configuration
@@ -261,6 +272,7 @@ export function createMyTool(apiKey: string) {
 The framework can be configured directly through code, no config file needed:
 
 ```typescript
+// Supported providers: 'anthropic' | 'openai' | 'openai-chat' | 'gemini'
 const llm = new LLMClient({
   provider: 'anthropic',
   model: 'claude-sonnet-4-5-20250929',
@@ -273,6 +285,15 @@ const agent = new Agent(llm, systemPrompt, tools, {
 });
 ```
 
+**Supported LLM Providers**:
+
+| Provider | Description | Compatible Services |
+|----------|-------------|---------------------|
+| `anthropic` | Anthropic Messages API | Claude |
+| `openai` | OpenAI Responses API | GPT-4o, etc. |
+| `openai-chat` | OpenAI Chat Completions API | Ollama, vLLM, DeepSeek, OpenRouter, Groq, etc. |
+| `gemini` | Google Gemini API | Gemini Pro/Flash, etc. |
+
 ## Tool List
 
 | Tool | Description | Parameters |
@@ -280,7 +301,9 @@ const agent = new Agent(llm, systemPrompt, tools, {
 | `read` | Read file content | `file_path`, `offset`, `limit` |
 | `write` | Write file | `file_path`, `content` |
 | `edit` | Edit file (string replacement) | `file_path`, `old_string`, `new_string` |
-| `bash` | Execute Shell command | `command`, `timeout`, `work_dir` |
+| `bash` | Execute Shell command (foreground/background) | `command`, `timeout`, `work_dir` |
+| `bash_output` | Get background command output | `id`, `regex` |
+| `bash_kill` | Terminate background command | `id` |
 | `get_skill` | Get Skill details | `skill_name` |
 
 ## Local Development
@@ -348,6 +371,7 @@ This project is licensed under the [MIT License](LICENSE).
 - MiniMax-M2: https://github.com/MiniMax-AI/MiniMax-M2
 - Anthropic API: https://docs.anthropic.com/claude/reference
 - OpenAI API: https://platform.openai.com/docs/api-reference
+- Google Gemini API: https://ai.google.dev/docs
 - Claude Skills: https://github.com/anthropics/skills
 
 ---
